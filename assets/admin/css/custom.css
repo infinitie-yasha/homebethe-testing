@@ -1,0 +1,728 @@
+
+/* panel favicon */
+.navbar-favicon {
+    width: 60px;
+    height: 45px;
+}
+
+.navbar-favicon img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+@media (min-width: 1400px) {
+
+    .navbar-container {
+        max-width: 1530px !important;
+    }
+}
+
+/* all tabler icon size */
+
+.navbar-vertical .ti {
+    font-size: large;
+}
+
+.payment-container .card {
+    scroll-margin-top: 80px;
+}
+
+#theme_color_settings .form-control-color {
+    width: 15rem !important;
+}
+
+.image-box-100 {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    width: 100px;
+    height: 100px;
+}
+
+.image-box-table {
+    width: 100px;
+    height: 100px;
+}
+
+.image-box-table img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* ===== STYLING FOR COMMON MEDIA FUNCTIONALITY ===== */
+
+/* Image upload sections */
+/* .image-upload-section {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+    min-height: 120px;
+} */
+
+/* .image-upload-section:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+} */
+
+.image-upload-section .ti-photo-plus {
+    font-size: 3rem;
+    color: #6c757d;
+}
+
+.image-upload-section:hover .ti-photo-plus {
+    color: #007bff;
+}
+
+/* Image cards styling */
+.image-upload-section .image {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.image-upload-section .image:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image-upload-section .image .image-upload-div {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-upload-section .image .image-upload-div img {
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.image-upload-section .image:hover .image-upload-div img {
+    transform: scale(1.05);
+}
+
+/* Remove button styling */
+.image-upload-section .remove-image {
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.image-upload-section .remove-image:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+
+/* Main product image styling */
+.image-uploaded-div {
+    position: relative;
+    display: inline-block;
+}
+
+.image-uploaded-div .border {
+    border: 2px solid #e9ecef !important;
+    border-radius: 8px;
+    padding: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-uploaded-div .border:hover {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.image-uploaded-div img {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.image-uploaded-div:hover img {
+    transform: scale(1.05);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .image-upload-section {
+        padding: 1rem;
+    }
+
+    .image-upload-section .ti-photo-plus {
+        font-size: 2rem;
+    }
+}
+
+.image-box-100 img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* section order scroll */
+.order-container {
+    overflow: scroll;
+    max-height: 500px;
+}
+
+.table-header {
+    background: var(--background-light);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+}
+
+.sortable-placeholder {
+    margin-bottom: 10px;
+    height: 4px;
+    margin-top: -14px;
+    /* default space + placeholder height */
+    transform: translateY(7px);
+    /* placeholder margin-top / 2 */
+    background-color: deeppink;
+    border-radius: 2px;
+}
+
+/* select 2 custom for repeater */
+/* .select2-container .select2-selection--single {
+    height: 40px !important;
+    width: 380px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 35px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 35px !important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #e5e7eb !important;
+} */
+
+
+/* 
+.ts-wrapper.single .ts-control {
+    background-image: none;
+    border: 1px solid #e5e7eb !important;
+    background-color: var(--tblr-bg-forms);
+    color: var(--tblr-body-color);
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+    background: var(--tblr-bg-forms);
+} */
+
+
+/* custom css for datatable */
+table.dataTable th.dt-type-numeric,
+table.dataTable th.dt-type-date,
+table.dataTable td.dt-type-numeric,
+table.dataTable td.dt-type-date {
+    text-align: left;
+}
+
+.dt-layout-table {
+    overflow: auto;
+}
+
+.offcanvas form {
+    height: 100%;
+    overflow: auto;
+}
+
+.offcanvas-body {
+    overflow-y: auto;
+    height: 100%;
+    max-height: 100vh;
+    /* or calc(100vh - header/footer height) */
+}
+
+#toast {
+    z-index: 1100;
+    /* Higher than offcanvas backdrop/z-index */
+}
+
+.toast {
+    box-shadow: rgb(31 41 55 / 23%) 0 2px 4px 0;
+}
+
+/* ====================================================================
+   Product Image Upload Sections - Enhanced Styles
+   ==================================================================== */
+
+/* Dashed border for empty state cards */
+.border-dashed {
+    border: 2px dashed #d0d5dd !important;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.border-dashed:hover {
+    border-color: #206bc4;
+    background-color: rgba(32, 107, 196, 0.02);
+}
+
+/* Image gallery card hover effects */
+.image-upload-section .card {
+    transition: all 0.3s ease;
+    border: 1px solid #e6e7e9;
+}
+
+.image-upload-section .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Delete button styling for gallery images */
+.image-upload-section .delete-img {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-upload-section .card:hover .delete-img {
+    opacity: 1;
+}
+
+/* Image badge numbering */
+.image-upload-section .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Primary image card styling */
+.image-uploaded-div .card {
+    transition: all 0.3s ease;
+    border: 2px solid #206bc4;
+}
+
+.image-uploaded-div .card:hover {
+    box-shadow: 0 8px 16px rgba(32, 107, 196, 0.15);
+}
+
+/* Empty state icon animation */
+.border-dashed .ti {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Responsive adjustments for product images */
+@media (max-width: 768px) {
+    .image-upload-section .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+
+/* Image aspect ratio containers */
+.card-img-top {
+    background-color: #f8f9fa;
+}
+
+.card-img-top img {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top img {
+    transform: scale(1.05);
+}
+
+/* Modern Chat Interface Styles */
+
+.direct-chat-msg {
+    margin-bottom: 16px;
+    clear: both;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.direct-chat-msg.left {
+    align-items: flex-start;
+    margin-right: 20%;
+}
+
+.direct-chat-msg.right {
+    align-items: flex-end;
+    margin-left: 20%;
+}
+
+.direct-chat-infos {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.direct-chat-msg.left .direct-chat-infos {
+    justify-content: flex-start;
+}
+
+.direct-chat-msg.right .direct-chat-infos {
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+}
+
+.direct-chat-name {
+    font-weight: 600;
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.direct-chat-timestamp {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.direct-chat-text {
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 280px;
+    word-wrap: break-word;
+    line-height: 1.4;
+    font-size: 14px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Admin messages (right side) */
+.direct-chat-msg.right .direct-chat-text {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    border-bottom-right-radius: 6px;
+}
+
+.direct-chat-msg.right .direct-chat-text::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -3px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-left-color: #1d4ed8;
+    border-bottom: none;
+    border-right: none;
+}
+
+/* User messages (left side) */
+.direct-chat-msg.left .direct-chat-text {
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 6px;
+}
+
+.direct-chat-msg.left .direct-chat-text::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -3px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-right-color: #ffffff;
+    border-bottom: none;
+    border-left: none;
+}
+
+/* Message input area */
+.message-input-area {
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    padding: 16px;
+    border-radius: 0 0 12px 12px;
+}
+
+.message-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.message-input-field {
+    flex: 1;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.message-input-field:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.message-input-field::placeholder {
+    color: #94a3b8;
+}
+
+/* Attachment button */
+.attachment-btn {
+    background: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #64748b;
+}
+
+/* Send button */
+.send-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+/* .send-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.4);
+}
+
+.send-btn:active {
+    transform: scale(0.95);
+} */
+
+/* Custom avatar styling for header */
+.avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #667eea;
+}
+
+/* Loading spinner */
+.loader {
+    text-align: center;
+    padding: 20px;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Attachment styling */
+.image-upload-section a {
+    margin: 4px;
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+/* Empty state */
+.empty-messages {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+}
+
+.empty-messages i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+/* Scrollbar styling */
+#element::-webkit-scrollbar {
+    width: 6px;
+}
+
+#element::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+#element::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#element::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Notification dropdown button styles to match Tabler design */
+
+
+/* Notification dropdown specific fixes */
+#list .card {
+    min-width: 285px;
+    max-width: 320px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+#list .list-group-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+#list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* #list .text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+} */
+
+/* #list .card-body .row {
+    margin: 0;
+}
+
+#list .card-body .col {
+    padding: 0.25rem;
+} */
+
+/* Fix notification text overflow */
+#list .d-block.text-secondary.text-truncate.mt-n1 {
+    max-width: 280px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ensure proper dropdown positioning */
+.dropdown-menu-card {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    z-index: 1000;
+    min-width: 320px;
+}
+
+/* Sales Inventory Chart Container */
+.piechat_height {
+    width: 100%;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Chart legend spacing */
+.piechat_height .apexcharts-legend {
+    max-width: 200px !important;
+}
+
+.piechat_height .apexcharts-legend-series {
+    margin: 2px 0 !important;
+}
+
+.piechat_height .apexcharts-legend-text {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+}
+
+
+/* Order Tracking Cards */
+#tracking-cards-container .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#tracking-cards-container .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+#tracking-cards-container .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+#tracking-cards-container .form-label.small {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+/* Promo Code View Image */
+.promo-view-image {
+    max-width: 200px;
+}
+
+#formdata_header_section .header-row {
+  background: var(--tblr-bg-surface-secondary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+
+

@@ -1,0 +1,125 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Product_faqs extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->database();
+        $this->load->library(['ion_auth', 'form_validation', 'upload']);
+        $this->load->helper(['url', 'language', 'file']);
+        $this->load->model(['product_model', 'product_faqs_model']);
+    }
+
+    public function index()
+    {
+        if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+            $this->data['main_page'] = TABLES . 'manage-product-faqs';
+            $settings = get_settings('system_settings', true);
+            $this->data['title'] = 'Product FAQS Management | ' . $settings['app_name'];
+            $this->data['meta_description'] = 'Product FAQs Management |' . $settings['app_name'];
+            if (isset($_GET['edit_id'])) {
+                $this->data['fetched_data'] = fetch_details('product_faqs', ['id' => $_GET['edit_id']]);
+            }
+            $this->load->view('seller/template', $this->data);
+        } else {
+            redirect('seller/login', 'refresh');
+        }
+    }
+
+    public function get_faqs_list()
+    {
+        if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+
+            return $this->product_faqs_model->get_faqs();
+        } else {
+            redirect('seller/login', 'refresh');
+        }
+    }
+    public function edit_product_faqs()
+    {
+        if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+            $this->form_validation->set_rules('answer', 'Answer', 'trim|required|xss_clean');
+            if (!$this->form_validation->run()) {
+                sendWebJsonResponse(true, strip_tags(validation_errors()));
+            } else {
+                $fields = ['edit_product_faq', 'product_id', 'question', 'answer', 'seller_id'];
+
+                foreach ($fields as $field) {
+                    $product_faq[$field] = $this->input->post($field, true) ?? "";
+                }
+                $this->product_faqs_model->add_product_faqs($product_faq);
+                $message = (isset($_POST['edit_product_faq'])) ? 'FAQ Updated Successfully' : 'FAQ Added Successfully';
+            sendWebJsonResponse(false, $message);
+            }
+        } else {
+            redirect('seller/login', 'refresh');
+        }
+    }
+    public function create_product_faqs()
+    {
+        if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+            $this->data['main_page'] = FORMS . 'add-product-faqs';
+            $settings = get_settings('system_settings', true);
+            $this->data['title'] = 'Add Product FAQS Management | ' . $settings['app_name'];
+            $this->data['meta_description'] = 'Add Product FAQs Management |' . $settings['app_name'];
+            $this->load->view('seller/template', $this->data);
+        } else {
+            redirect('seller/login', 'refresh');
+        }
+    }
+
+  public function add_faqs()
+{
+    if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+
+   
+        $this->form_validation->set_rules('question', 'Question', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('answer', 'Answer', 'trim|required|xss_clean');
+
+       
+        if (empty($this->input->post('edit_product_faq', true))) {
+            $this->form_validation->set_rules('product_id', 'Product', 'required|greater_than[0]');
+        }
+
+        if (!$this->form_validation->run()) {
+            sendWebJsonResponse(true, strip_tags(validation_errors()));
+        } else {
+            $_POST['seller_id'] = $this->session->userdata('user_id');
+            $fields = ['edit_product_faq', 'product_id', 'question', 'answer','seller_id'];
+            
+            foreach ($fields as $field) {
+                $product_faq[$field] = $this->input->post($field, true) ?? "";
+            }
+
+            $this->product_faqs_model->add_product_faqs($_POST);
+
+            $message = (isset($_POST['edit_product_faq']) && !empty($_POST['edit_product_faq']))
+                        ? 'FAQ Updated Successfully' 
+                        : 'FAQ Added Successfully';
+
+            sendWebJsonResponse(false, $message);
+            print_r(json_encode($this->response));
+        }
+    } else {
+        redirect('seller/login', 'refresh');
+    }
+}
+
+
+    public function delete_product_faq()
+    {
+        if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
+
+            $this->product_faqs_model->delete_faq($_GET['id']);
+
+            $this->response['error'] = false;
+            $this->response['message'] = 'Deleted Succesfully';
+
+            print_r(json_encode($this->response));
+        } else {
+            redirect('seller/login', 'refresh');
+        }
+    }
+}

@@ -1,0 +1,397 @@
+/* sidebar logo  */
+[data-bs-theme=dark] .navbar-brand-autodark .navbar-brand-image {
+    filter: none;
+}
+
+.login-logo a img {
+    max-height: 80px;
+}
+
+
+.notiflix-confirm-content {
+    width: 450px !important;
+}
+
+
+
+/* Apply styles only when tbody has exactly one tr */
+/* tbody:has(> tr:first-child:last-child) .table-dropdown-menu {
+    background-color: #f8f9fa;
+    position: relative !important;
+    border: 1px solid #ccc;
+    transform: translate(100px, 2px) !important;
+    width: 10px;
+} */
+
+tbody:has(> tr:first-child:last-child) .table-dropdown-menu {
+    /* Styles for when tbody has exactly 1 row */
+    position: relative !important;
+    transform: translate(-75px, 2px) !important;
+    width: 10px;
+}
+
+tbody:has(> tr:nth-child(2):last-child) .table-dropdown-menu {
+    /* Styles for when tbody has 1 or 2 rows */
+    position: relative !important;
+    transform: translate(10px, 2px) !important;
+    width: 10px;
+}
+
+
+/* offcanvas  */
+
+.offcanvas-large {
+    width: 850px !important;
+}
+
+.offcanvas-medium {
+    width: 600px !important;
+}
+
+.order_timeline_card {
+    height: 350px;
+    overflow-y: auto;
+}
+
+/* Product View Styles - Simple & Clean */
+.product-view-container {
+    padding: 1.5rem;
+
+    margin: -1.5rem;
+    min-height: 100vh;
+}
+
+.product-image-container {
+    height: 180px;
+    width: 180px;
+}
+
+.product-image-container img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    color: #6c757d;
+}
+
+.attributes-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.attribute-icon {
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+}
+
+.images-gallery {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.gallery-item {
+    aspect-ratio: 1;
+}
+
+.gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-view-container {
+        padding: 1rem;
+    }
+
+    .attributes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .images-gallery {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+}
+
+
+.dt-layout-table {
+    overflow: auto;
+}
+
+.offcanvas form {
+    height: 100%;
+    overflow: auto;
+}
+
+.offcanvas-body {
+    overflow-y: auto;
+    height: 100%;
+    max-height: 100vh;
+    /* or calc(100vh - header/footer height) */
+}
+
+#toast {
+    z-index: 1100;
+    /* Higher than offcanvas backdrop/z-index */
+}
+
+.toast {
+    box-shadow: rgb(31 41 55 / 23%) 0 2px 4px 0;
+}
+
+/* table image */
+
+.image-upload-div img {
+    /* max-width: 100%; */
+    max-height: 200px;
+    object-fit: contain;
+    height: 200px;
+}
+
+/* .image-uploaded-div {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    width: 150px;
+    height: 150px;
+} */
+
+.image-box-100 {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    width: 100px;
+    height: 100px;
+}
+
+.image-box-table {
+    width: 100px;
+    height: 100px;
+}
+
+.image-box-table img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.image-box-100 img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+
+/* table pagination custom  */
+
+.fixed-table-pagination .page-item.page-next,
+.page-item.page-prev {
+    flex: 0 0 0%;
+    text-align: left;
+}
+
+
+/* daterangepicker */
+.daterangepicker {
+    font-family: sans-serif;
+    font-size: 20px;
+    line-height: 1em;
+}
+
+
+/* dropzone */
+.dropzone {
+    border: 1px dashed #a4a6a9;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.dropzone .dz-message {
+    text-align: center;
+    margin: 4em 0em;
+}
+
+@media (min-width: 992px) {
+    .navbar-container {
+        margin-left: 400px;
+    }
+}
+
+/* product category section */
+.category-card {
+    height: 300px;
+    overflow: auto;
+}
+
+/* Order details page */
+
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.75rem;
+    top: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #e9ecef;
+}
+
+.timeline-content {
+    padding-left: 0.5rem;
+}
+
+.avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background-size: cover;
+    background-position: center;
+}
+
+.avatar-lg {
+    width: 4rem;
+    height: 4rem;
+}
+
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+@media (max-width: 768px) {
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    .timeline-marker {
+        left: -1.25rem;
+        width: 0.5rem;
+        height: 0.5rem;
+    }
+
+    .avatar-lg {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+@media (min-width: 1400px) {
+
+    .navbar-container {
+        max-width: 1530px !important;
+    }
+}
+
+
+.navbar-vertical .ti {
+    font-size: large;
+}
+
+[data-bs-theme=dark] .daterangepicker .ranges li:hover {
+    background-color: #373f4c;
+}
+
+body[data-bs-theme=dark] .daterangepicker td.off,
+.daterangepicker td.off.in-range,
+.daterangepicker td.off.start-date,
+.daterangepicker td.off.end-date {
+    background-color: #373f4c;
+    border-color: transparent;
+    color: #999;
+}
+
+body[data-bs-theme=light] .daterangepicker td.off,
+.daterangepicker td.off.in-range
+{
+    background-color: #fff;
+    border-color: transparent;
+    color: #999;
+}
+
+[data-bs-theme=dark] .daterangepicker td.in-range {
+    background-color: #40404099;
+    border-color: transparent;
+    color: #f6f4f4;
+    border-radius: 0;
+}
+
+[data-bs-theme=dark] .daterangepicker td.available:hover,
+.daterangepicker th.available:hover {
+    background-color: #373f4c;
+    border-color: transparent;
+    color: inherit;
+}
+body[data-bs-theme=dark] .daterangepicker td.end-date {
+    background-color: #357ebd;
+    border-radius: 0 4px 4px 0;
+    border-color: transparent;
+      background-color: #357ebd;
+  border-color: transparent;
+  color: #fff;
+}
+[data-bs-theme=dark] .jstree-default .jstree-clicked {
+    background-color: #111827;
+    color: #fff;
+}
+[data-bs-theme=light] .jstree-default .jstree-clicked {
+    background-color: #beebff;
+    color: #000;
+}
+
+[data-bs-theme=dark] .jstree-hovered{
+    background-color: #262c3f;
+    color: #fff;
+}
+[data-bs-theme=light] .jstree-hovered{
+    background-color: #beebff;
+    color: #000;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+
+/* Active submenu item */
+.navbar-nav .dropdown-menu .dropdown-item.active-submenu {
+  padding-left: 2rem !important;
+  background-color: rgba(32, 107, 196, 0.2) !important;
+  color: #fff !important;
+  border-left: 3px solid #206bc4 !important;
+  font-weight: 600 !important;
+}
+
+/* Highlight open dropdown toggle */
+.navbar-nav .nav-item.dropdown.show > .dropdown-toggle {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  font-weight: 600 !important;
+}

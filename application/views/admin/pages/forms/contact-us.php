@@ -1,0 +1,61 @@
+<div class="page-wrapper">
+
+  <div class="page">
+
+    <!-- BEGIN PAGE HEADER -->
+    <div class="page-header d-print-none" aria-label="Page header">
+      <div class="container-xl">
+        <div class="row g-2 align-items-center">
+          <div class="col">
+            <h2 class="page-title">Contact Us</h2>
+          </div>
+          <div class="col-auto ms-auto d-print-none">
+            <div class="d-flex">
+              <ol class="breadcrumb breadcrumb-arrows" aria-label="breadcrumbs">
+                <li class="breadcrumb-item">
+                  <a href="<?= base_url('admin/home') ?>">Home</a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                  <a href="<?= base_url('admin/privacy-policy') ?>">Policies</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  <a href="#">Contact Us</a>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END PAGE HEADER -->
+
+    <div class="page-body">
+      <div class="container-xl">
+        <div class="card">
+          <form x-data="ajaxForm({
+                                            url: base_url + 'admin/Contact_us/update-contact-settings',
+                                            modalId: '',
+                                            loaderText: 'Saving...'
+                                        })" method="POST" class="form-horizontal" id="contact_settings_form"
+            enctype="multipart/form-data">
+            <div class="card-body">
+              <label class="col-form-label fw-bolder"><i class="ti ti-align-left"></i> Contact Us </label>
+
+              <div class="my-5">
+                <textarea class="hugerte-mytextarea" name="contact_input_description"
+                  placeholder="Place some text here"><?= @$contact_info ?></textarea>
+              </div>
+              <div class="form-group text-end">
+                <button type="reset" class="btn ">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submit_btn">Update Contact Us <i
+                    class="cursor-pointer ms-2 ti ti-arrow-right"></i></button>
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

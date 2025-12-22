@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Ci3\\": "application/"
+        }
+    },
+    "require": {
+        "jaysparmar/codeigniter3": "1.0.9",
+        "ext-curl": "*"
+    }
+}

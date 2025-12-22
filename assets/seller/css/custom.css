@@ -1,0 +1,12 @@
+.qty-group input {
+    max-width: 40px;
+}
+[data-bs-theme="dark"] ::placeholder {
+  color: #aaa !important; /* light gray placeholder text */
+  opacity: 1; /* ensure visible */
+}
+
+/* Optional: make it slightly lighter for better contrast */
+[data-bs-theme="dark"] .form-control::placeholder {
+  color: #b5b5b5 !important;
+}
