@@ -59,7 +59,7 @@ class My_account extends CI_Controller
             $this->data['keywords'] = 'Orders, ' . $this->data['web_settings']['meta_keywords'];
             $this->data['description'] = 'Orders | ' . $this->data['web_settings']['meta_description'];
             $total = fetch_orders(false, $this->data['user']->id, false, false, 1, NULL, NULL, NULL, NULL);
-            $limit = 10;
+            $limit = 5;
             $config['base_url'] = base_url('my-account/orders');
             $config['total_rows'] = $total['total'];
             $config['per_page'] = $limit;
@@ -101,9 +101,11 @@ class My_account extends CI_Controller
             }
             $offset = ($page_no - 1) * $limit;
             $this->pagination->initialize($config);
-            $this->data['links'] =  $this->pagination->create_links();
+            $this->data['links'] = $this->pagination->create_links();
             $this->data['orders'] = fetch_orders(false, $this->data['user']->id, false, false, $limit, $offset, 'date_added', 'DESC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', true);
-
+            // echo "<pre>";
+            // print_r($this->data['orders']);
+            // die;
             $this->data['payment_methods'] = get_settings('payment_method', true);
             $this->load->view('front-end/' . THEME . '/template', $this->data);
         } else {
@@ -127,6 +129,9 @@ class My_account extends CI_Controller
                 redirect(base_url('my-account/orders'));
             }
             $this->data['order'] = $order['order_data'][0];
+            // echo "<pre>";
+            // print_r($this->data['order']);
+            // die;
             $this->data['return_reasons'] = $return_reasons;
             if ($order['order_data'][0]['payment_method'] == "Bank Transfer") {
                 $bank_transfer = fetch_details('order_bank_transfer', ['order_id' => $order['order_data'][0]['id']]);
@@ -144,7 +149,8 @@ class My_account extends CI_Controller
             $this->data['main_page'] = VIEW . 'api-order-invoice';
             $settings = $this->data['settings'];
             $this->data['title'] = 'Invoice Management |' . $settings['app_name'];
-            $this->data['meta_description'] = 'Invoice Management | ' . $this->data['web_settings']['meta_description'];;
+            $this->data['meta_description'] = 'Invoice Management | ' . $this->data['web_settings']['meta_description'];
+            ;
             if (isset($order_id) && !empty($order_id)) {
                 $res = $this->order_model->get_order_details(['o.id' => $order_id], true);
                 if (!empty($res)) {
@@ -216,7 +222,7 @@ class My_account extends CI_Controller
                 $images_info_error = "";
                 $allowed_media_types = 'jpg|png|jpeg';
                 $config = [
-                    'upload_path' =>  FCPATH . RETURN_IMAGES,
+                    'upload_path' => FCPATH . RETURN_IMAGES,
                     'allowed_types' => $allowed_media_types,
                     'max_size' => 8000,
                 ];
@@ -263,7 +269,7 @@ class My_account extends CI_Controller
                 }
                 if ($images_info_error != NULL) {
                     $this->response['error'] = true;
-                    $this->response['message'] =  $images_info_error;
+                    $this->response['message'] = $images_info_error;
                     print_r(json_encode($this->response));
                     return false;
                 }
@@ -734,7 +740,7 @@ class My_account extends CI_Controller
                 ];
                 if (is_exist($data, 'favorites')) {
                     $this->db->delete('favorites', $data);
-                    $this->response['error']   = false;
+                    $this->response['error'] = false;
                     $this->response['csrfName'] = $this->security->get_csrf_token_name();
                     $this->response['csrfHash'] = $this->security->get_csrf_hash();
                     $this->response['message'] = "Product removed from favorite !";
@@ -791,7 +797,8 @@ class My_account extends CI_Controller
                 'user_id' => form_error('user_id'),
                 'payment_address' => form_error('payment_address'),
                 'amount' => form_error('amount'),
-            );;
+            );
+            ;
             $this->response['data'] = array();
             print_r(json_encode($this->response));
         } else {
@@ -878,7 +885,7 @@ class My_account extends CI_Controller
 
                 $user[$i] = $row;
                 $user[$i]['unread_msg'] = $unread_meg;
-                $user[$i]['picture']  = $row['username'];
+                $user[$i]['picture'] = $row['username'];
 
                 $date = strtotime('now');
                 if ($to_id == $row['id']) {
@@ -943,6 +950,7 @@ class My_account extends CI_Controller
         } else {
             $user_id = $this->session->userdata('user_id');
 
+
             $date = strtotime('now');
             $date = $date + 15;
             $data = array(
@@ -956,6 +964,7 @@ class My_account extends CI_Controller
             $user_ids = array_column($users, 'opponent_user_id');
 
             $members = $this->chat_model->get_members($user_ids);
+
             $member = array();
             $i = 0;
 
@@ -970,7 +979,7 @@ class My_account extends CI_Controller
 
                 $member[$i] = $row;
                 $member[$i]['unread_msg'] = $unread_meg;
-                $member[$i]['picture']  = isset($row['image']) ? $row['image'] : '';
+                $member[$i]['picture'] = isset($row['image']) ? $row['image'] : '';
                 $date = strtotime('now');
 
                 if ($row['last_online'] > $date) {
@@ -1035,8 +1044,8 @@ class My_account extends CI_Controller
             if (!empty($_FILES['documents']['name'])) {
 
                 $year = date('Y');
-                $target_path = FCPATH . CHAT_MEDIA_PATH  . '/';
-                $sub_directory = CHAT_MEDIA_PATH  . '/';
+                $target_path = FCPATH . CHAT_MEDIA_PATH . '/';
+                $sub_directory = CHAT_MEDIA_PATH . '/';
 
                 if (!file_exists($target_path)) {
                     mkdir($target_path, 0777, true);
@@ -1066,7 +1075,7 @@ class My_account extends CI_Controller
                             $temp_array['sub_directory'] = $sub_directory;
                             $media_ids[] = $media_id = $this->media_model->set_media($temp_array); /* set media in database */
                             if (strtolower($temp_array['image_type']) != 'gif')
-                                resize_image($temp_array,  $target_path, $media_id);
+                                resize_image($temp_array, $target_path, $media_id);
                             $other_images_new_name[$i] = $temp_array['file_name'];
                         }
                         $data = array(
@@ -1276,7 +1285,7 @@ class My_account extends CI_Controller
 
             $message = array();
 
-            $messages = $this->chat_model->load_chat($from_id, $to_id, $type,  $offset, $limit, $sort, $order, $search);
+            $messages = $this->chat_model->load_chat($from_id, $to_id, $type, $offset, $limit, $sort, $order, $search);
             if ($messages['total_msg'] == 0) {
 
                 $message['error'] = true;
@@ -1428,7 +1437,7 @@ class My_account extends CI_Controller
 
                 $user[$i] = $row;
                 $user[$i]['unread_msg'] = $unread_meg;
-                $user[$i]['picture']  = $row['username'];
+                $user[$i]['picture'] = $row['username'];
 
                 $date = strtotime('now');
                 if ($to_id == $row['id']) {
@@ -1475,7 +1484,7 @@ class My_account extends CI_Controller
 
                 $user[$i] = $row;
                 $user[$i]['unread_msg'] = $unread_meg;
-                $user[$i]['picture']  = $row['username'];
+                $user[$i]['picture'] = $row['username'];
 
                 $date = strtotime('now');
                 if ($to_id == $row['id']) {
@@ -1568,7 +1577,7 @@ class My_account extends CI_Controller
             }
             $offset = ($page_no - 1) * $limits;
             $this->pagination->initialize($config);
-            $this->data['links'] =  $this->pagination->create_links();
+            $this->data['links'] = $this->pagination->create_links();
 
             $this->data['main_page'] = 'tickets';
             $this->data['title'] = 'Customer Support | ' . $this->data['web_settings']['site_title'];
@@ -1587,7 +1596,7 @@ class My_account extends CI_Controller
     {
         if ($this->ion_auth->logged_in()) {
             $_SESSION['user_id'];
-            $data = fetch_details('users', ['id' => $_SESSION['user_id']],  'mobile,password');
+            $data = fetch_details('users', ['id' => $_SESSION['user_id']], 'mobile,password');
             if ($this->ion_auth->logged_in()) {
                 if ((!empty($this->data['settings']['is_refer_earn_on']) && ($this->data['settings']['is_refer_earn_on'] == 1 || $this->data['settings']['is_refer_earn_on'] == '1'))) {
                     $this->data['main_page'] = 'refer-and-earn';

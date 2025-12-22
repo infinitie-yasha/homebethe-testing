@@ -1461,9 +1461,10 @@ $("#promo_code_table").on("click-cell.bs.table", function (field, value, row, $e
     $('#view_minimum_order_amount').text($el.minimum_order_amount || '-');
     $('#view_discount').text($el.discount || '-');
     $('#view_image').attr('src', $el.image_main_url || base_url + 'assets/no-image.png');
+    
 
-    // Discount Type with badge
-    if ($el.discount_type === 'percentage') {
+    // Discount Type with badge 
+    if ($el.discount_type_main === 'percentage') {
         $('#view_discount_type').html('<span class="badge bg-info-lt">Percentage %</span>');
         $('#view_max_discount_row').removeClass('d-none');
         $('#view_max_discount_amount').text($el.max_discount_amount || '-');

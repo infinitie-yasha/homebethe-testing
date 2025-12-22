@@ -22,8 +22,6 @@ class Cart extends CI_Controller
 
     public function index()
     {
-
-
         if ($this->data['is_logged_in']) {
             $this->data['main_page'] = 'cart';
             $this->data['title'] = 'Product Cart | ' . $this->data['web_settings']['site_title'];
@@ -118,7 +116,7 @@ class Cart extends CI_Controller
         $settings = $this->data['settings'];
         $cart_count = get_cart_count($_POST['user_id']);
         $is_variant_available_in_cart = is_variant_available_in_cart($_POST['product_variant_id'], $_POST['user_id']);
-        
+
         if (!$is_variant_available_in_cart) {
             if ($cart_count[0]['total'] >= $settings['max_items_cart']) {
                 $this->response['error'] = true;
@@ -139,6 +137,37 @@ class Cart extends CI_Controller
         }
         $saved_for_later = (isset($_POST['is_saved_for_later']) && $_POST['is_saved_for_later'] != "") ? $this->input->post('is_saved_for_later', true) : 0;
         $check_status = ($saved_for_later == 1) ? false : true;
+
+
+
+        $variantId = $this->input->post('product_variant_id', true);
+        $cartItem = null;
+        $old_cart = get_cart_total($this->data['user']->id);
+
+        foreach ($old_cart as $key => $item) {
+            if (!is_array($item) || !isset($item['id'])) {
+                continue;
+            }
+
+            if ((int) $item['id'] === (int) $variantId) {
+                $cartItem = $item;
+                break;
+            }
+        }
+
+
+
+        if ($cartItem) {
+            $update_qty = $cartItem['qty'] + $data['qty'];
+            $data['qty'] = $update_qty;
+
+            $this->cart_model->remove_from_cart(array(
+                'user_id' => $this->data['user']->id,
+                'product_variant_id' => $this->input->post('product_variant_id', true),
+            ));
+        }
+
+
         if (!$this->cart_model->add_to_cart($data, $check_status)) {
             if ($_POST['qty'] == 0) {
                 $res = get_cart_total($this->data['user']->id, false);
@@ -147,13 +176,13 @@ class Cart extends CI_Controller
             }
 
             $stock = 1;
-            if($res[0]['type'] == 'simple'){
+            if ($res[0]['type'] == 'simple') {
                 $stock = $res[0]['product_stock'];
-            } else if($res[0]['type'] == 'variable_product'){
+            } else if ($res[0]['type'] == 'variable_product') {
                 $stock = $res[0]['product_variants'][0]['stock'];
 
             }
-            
+
 
             $this->response['error'] = false;
             $this->response['message'] = 'Item added to Cart.';
@@ -598,17 +627,45 @@ class Cart extends CI_Controller
                 $product_ids = (!empty($product_ids)) ? implode(",", $product_ids) : "";
                 $product_attachments = fetch_details('products', '', 'is_attachment_required', '', '', '', '', 'id', $product_ids);
 
+
                 $is_attachment_required = false;
-                if (!empty($product_attachments))
+                if (!empty($product_attachments)) {
                     foreach ($product_attachments as $attachment) {
                         if ($attachment['is_attachment_required'] == 1) {
                             $is_attachment_required = true;
                             break;
                         }
                     }
+                }
+
+              
+                $hasFile = false;
+
+                if (isset($_FILES['documents']['error'])) {
+                    foreach ($_FILES['documents']['error'] as $productId => $files) {
+                        foreach ($files as $index => $error) {
+                            if ($error !== UPLOAD_ERR_NO_FILE) {
+                                $hasFile = true;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+
+                if (!$hasFile && $is_attachment_required) {
+                    $this->response['error'] = true;
+                    $this->response['message'] = "Some of your products in cart require at least one media file to be uploaded!";
+                    $this->response['csrfName'] = $this->security->get_csrf_token_name();
+                    $this->response['csrfHash'] = $this->security->get_csrf_hash();
+                    echo json_encode($this->response);
+                    return;
+                }
+
+         
                 /* ends checking if any of the product requires the media file or not */
 
                 if (empty($_FILES['documents']['name']) && $is_attachment_required) {
+
                     $this->response['error'] = true;
                     $this->response['message'] = "Some of your products in cart require at least one media file to be uploaded!";
                     $this->response['csrfName'] = $this->security->get_csrf_token_name();

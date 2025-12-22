@@ -122,13 +122,15 @@
                                     $active_status = $item['active_status'];
                                     $cancellable_index = array_search($cancelable_till, $status);
                                     $active_index = array_search($active_status, $status);
+                                    
                                     if (!$item['is_already_cancelled'] && $item['is_cancelable'] && $active_index <= $cancellable_index && $row['type'] != 'digital_product') { ?>
-                                        <div class="col my-auto">
+                                        <!-- Removing This button because it conditions are not proper -->
+                                        <!-- <div class="col my-auto">
                                             <h5>
                                                 <a class="update-order block button-sm buttons btn-6-1 mt-3 m-0" data-status="cancelled" data-order-id="<?= $row['id'] ?>"><?= !empty($this->lang->line('cancel')) ? str_replace('\\', '', $this->lang->line('cancel')) : 'Cancel' ?></a>
                                             </h5>
-                                        </div>
-                                    <?php } ?>
+                                        </div> -->
+                                    <?php } ?>  
 
                                     <?php
                                     $order_date = $row['order_items'][0]['status'][3][1];

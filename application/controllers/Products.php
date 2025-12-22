@@ -1352,6 +1352,8 @@ class Products extends CI_Controller
             $zipcode = $this->input->post('zipcode', true);
             $is_pincode = is_exist(['zipcode' => $zipcode], 'zipcodes');
             $product_id = $this->input->post('product_id', true);
+
+
             if ($is_pincode) {
                 $zipcode_id = fetch_details('zipcodes', ['zipcode' => $zipcode], 'id');
                 $is_available = is_product_delivarable($type = 'zipcode', $zipcode_id[0]['id'], $product_id);
@@ -1370,7 +1372,9 @@ class Products extends CI_Controller
             } else {
                 $product_data = fetch_details('products', ['id' => $product_id], 'pickup_location');
                 $product_varient_data = fetch_details('product_variants', ['product_id' => $product_id], 'weight');
-                $pickup_pincode = fetch_details('pickup_locations', ['pickup_location' => $product_data[0]['pickup_location']], 'pin_code');
+                $pickup_pincode = fetch_details('pickup_locations', ['id' => $product_data[0]['pickup_location']], 'pin_code');
+
+
                 if (isset($zipcode)) {
                     $availibility_data = [
                         'pickup_postcode' => (isset($pickup_pincode[0]['pin_code']) && !empty($pickup_pincode[0]['pin_code'])) ? $pickup_pincode[0]['pin_code'] : "",
@@ -1378,6 +1382,7 @@ class Products extends CI_Controller
                         'cod' => 0,
                         'weight' => $product_varient_data[0]['weight'],
                     ];
+
                     $check_deliveribility = $this->shiprocket->check_serviceability($availibility_data);
                     if (isset($check_deliveribility['status_code']) && $check_deliveribility['status_code'] == 422) {
                         $this->response['error'] = true;
@@ -1427,7 +1432,7 @@ class Products extends CI_Controller
                 $city_id = fetch_details('cities', ['name' => $city], 'id');
 
                 $is_available = is_product_delivarable('city', $city_id[0]['id'], $product_id);
-               
+
                 if ($is_available) {
                     $_SESSION['valid_city'] = $city;
                     $this->response['error'] = false;

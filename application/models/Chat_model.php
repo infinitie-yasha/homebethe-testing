@@ -43,13 +43,19 @@ class Chat_model extends CI_Model
 
     function get_members($user_id)
     {
-        $this->db->select('id, username'); // Specify the columns to select
-        $this->db->from('users');
-        $this->db->where_in('id', $user_id);
-        $this->db->order_by("username", "asc");
-        $query = $this->db->get();
-        return $query->result_array();
-    }    
+        
+        if (empty($user_id) || !is_array($user_id)) {
+            return [];
+        }
+
+        return $this->db
+            ->select('id, username')
+            ->from('users')
+            ->where_in('id', $user_id)
+            ->order_by('username', 'asc')
+            ->get()
+            ->result_array();
+    }
 
     function get_supporters()
     {
@@ -62,7 +68,7 @@ class Chat_model extends CI_Model
                 GROUP BY u.id";
 
         $query = $this->db->query($sql);
-        $supporters =  $query->result_array();
+        $supporters = $query->result_array();
 
         return $supporters;
     }
@@ -124,7 +130,7 @@ class Chat_model extends CI_Model
 
         $sql = "SELECT * FROM messages WHERE id='$msg_id' ";
         $query = $this->db->query($sql);
-        $messages =  $query->result_array();
+        $messages = $query->result_array();
         $product = array();
         $i = 0;
         foreach ($messages as $message) {
@@ -174,7 +180,7 @@ class Chat_model extends CI_Model
         return $product;
     }
 
-    function load_chat($from_id, $to_id, $type = '',  $offset = '', $limit = '', $sort = '', $order = '', $search = '')
+    function load_chat($from_id, $to_id, $type = '', $offset = '', $limit = '', $sort = '', $order = '', $search = '')
     {
 
         // $from_id is a group id when $type is = group 
@@ -203,7 +209,7 @@ class Chat_model extends CI_Model
 
 
         $query = $this->db->query($sql);
-        $messages =  $query->result_array();
+        $messages = $query->result_array();
 
         $product = array();
         $i = 0;
@@ -248,14 +254,14 @@ class Chat_model extends CI_Model
             $query = $this->db->query("SELECT * FROM chat_groups WHERE id=$user_or_group_id ");
         }
 
-        $messages =  $query->result_array();
+        $messages = $query->result_array();
         return $messages;
     }
 
     function get_user_picture($user_id)
     {
         $query = $this->db->query("SELECT * FROM users WHERE id='$user_id' ");
-        $messages =  $query->result_array();
+        $messages = $query->result_array();
         $picture = substr($messages[0]['first_name'], 0, 1) . '' . substr($messages[0]['last_name'], 0, 1);
         return $picture;
     }

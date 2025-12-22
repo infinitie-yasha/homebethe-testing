@@ -908,7 +908,7 @@ $(document).ready(function () {
                     var html = '';
                     if ((data.promo_codes).length != 0) {
                         $.each(data.promo_codes, function (i, e) {
-                            html += '<label for="promo-code-' + e.id + '"><li class="list-group-item d-flex justify-content-between lh-condensed mt-3">' +
+                            html += '<label for="promo-code-' + e.id + '"><li style="cursor: pointer;" class="list-group-item d-flex justify-content-between lh-condensed mt-3">' +
                                 '<img src="' + e.image + '" style="max-width:80px;max-height:80px;"/>' +
                                 '<div class="col-11 row pl-2">' +
                                 '<div class="col-6 text-dark" title="Copy promocode" id="redeem_promocode" data-value = ' + e.promo_code + '>' + e.promo_code + '</div>' +
@@ -916,7 +916,9 @@ $(document).ready(function () {
                                 '</div>' +
                                 '</li></label>';
                         });
+                        $("#show_msg_promo").html('Click To Apply');
                     } else {
+                        $("#show_msg_promo").html('');
                         html += '<div class="align-items-center d-flex flex-column">' +
                             '<div class="empty-compare">' +
                             '<img src="' + base_url + '/assets/front_end/classic/images/no-offer-2.jpeg" alt="Opps...No Offers Avilable">' +
@@ -933,6 +935,15 @@ $(document).ready(function () {
 
     $(".address-modal").on('click', '.submit', function (event) {
         event.preventDefault();
+        let isChecked = $('input.select-address:checked').length > 0;
+        if (!isChecked) {
+            Toast.fire({
+                icon: 'error',
+                title: "Please select Address !"
+            });
+            return;
+        }
+
         var index = $('input[class="select-address"]:checked').data('index');
         var address = addresses[index];
 
@@ -1035,7 +1046,7 @@ $(document).ready(function () {
                     var delivery_charge = 0;
                     if (selectedPaymentMethod === 'COD') {
                         delivery_charge = delivery_charge_with_cod.replace(',', '');
-                        
+
                     } else {
                         delivery_charge = delivery_charge_without_cod.replace(',', '');
 

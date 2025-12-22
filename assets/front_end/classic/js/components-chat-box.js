@@ -1197,30 +1197,34 @@ $(document).ready(() => {
     }
 });
 var search_user = "";
-$('.search_user').each(function () {
-    search_user = $(this).select2({
-        ajax: {
-            url: base_url + 'my-account/search_user',
-            type: "GET",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    search: params.term, // search term
-                };
+$(document).ready(function () {
+    $('.search_user').each(function () {    
+        console.log($(this));
+        
+        search_user = $(this).select2({
+            ajax: {
+                url: base_url + 'my-account/search_user',
+                type: "GET",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term, // search term
+                    };
+                },
+                processResults: function (response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
             },
-            processResults: function (response) {
-                return {
-                    results: response
-                };
-            },
-            cache: true
-        },
-        minimumInputLength: 1,
-        theme: 'bootstrap4',
-        placeholder: 'Search for countries',
-    });
-    search_user.on('select2:select', function (e) {
-        $('.search_user').empty();
+            minimumInputLength: 1,
+            theme: 'bootstrap4',
+            placeholder: 'Search for countries',
+        });
+        search_user.on('select2:select', function (e) {
+            $('.search_user').empty();
+        });
     });
 });

@@ -121,7 +121,7 @@
                                                 <td>
                                                     <div class="cart-product-image">
                                                         <a href="<?= base_url('products/details/' . $row['slug']) ?>" target="_blank">
-                                                            <img src="<?= rawurlencode($row['image']) ?>" alt="">
+                                                            <img src="<?= (strpos($row['image'], base_url()) !== false) ? $row['image'] : base_url($row['image']) ?>" alt="">
                                                         </a>
                                                     </div>
                                                 </td>

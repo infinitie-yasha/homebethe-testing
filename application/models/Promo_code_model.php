@@ -220,7 +220,19 @@ class Promo_code_model extends CI_Model
             $tempRow['no_of_users'] = $row['no_of_users'];
             $tempRow['discount_type'] = $row['discount_type'];
             $tempRow['max_discount_amt'] = $row['max_discount_amount'];
-            $tempRow['image'] = (isset($row['image']) && !empty($row['image'])) ? base_url() . $row['image'] : base_url() . NO_IMAGE;
+            if (!empty($row['image'])) {
+                if (preg_match('#^https?://#', $row['image'])) {
+                    $tempRow['image'] = $row['image'];
+                } elseif (file_exists(FCPATH . $row['image'])) {
+                    $tempRow['image'] = base_url($row['image']);
+                } else {
+                    $tempRow['image'] = base_url(NO_IMAGE);
+                }
+            } else {
+                $tempRow['image'] = base_url(NO_IMAGE);
+            }
+
+            // $tempRow['image'] = (isset($row['image']) && !empty($row['image'])) ? base_url() . $row['image'] : base_url() . NO_IMAGE;
             $tempRow['no_of_repeat_usage'] = $row['no_of_repeat_usage'];
             $tempRow['status'] = $row['status'];
             $tempRow['is_cashback'] = $row['is_cashback'];
