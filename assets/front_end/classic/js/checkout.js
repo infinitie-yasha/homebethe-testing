@@ -3,7 +3,12 @@ var stripe1;
 var fatoorah_url = '';
 var currency = $('#currency').val();
 var supported_locals = $('#supported_locals').val();
-
+function removeCommaIfExists(value) {
+    if (typeof value === 'string') {
+        return value.includes(',') ? value.replace(/,/g, '') : value;
+    }
+    return value; // number → return as-is
+}
 $(document).ready(function () {
 
     var addresses = [];
@@ -1010,9 +1015,12 @@ $(document).ready(function () {
                 $('.delivery_charge_without_cod').val(result.delivery_charge_without_cod)
                 $('.estimate_date').html(result.estimate_date)
                 var shipping_method = result.shipping_method
-                var delivery_charge = result.delivery_charge_with_cod
-                var delivery_charge_with_cod = result.delivery_charge_with_cod
-                var delivery_charge_without_cod = result.delivery_charge_without_cod
+                console.log(result);
+
+                var delivery_charge_with_cod = removeCommaIfExists(result.delivery_charge_with_cod);
+                var delivery_charge_without_cod = removeCommaIfExists(result.delivery_charge_without_cod);
+                var delivery_charge = delivery_charge_with_cod;
+
                 if (result.availability_data != null) {
                     result.availability_data.forEach(product => {
                         if (product.delivery_by == 'standard_shipping') {
@@ -1026,8 +1034,9 @@ $(document).ready(function () {
                         }
                     })
                 }
+                console.log(parseFloat(delivery_charge));
                 var final_total = parseFloat(sub_total) + parseFloat(delivery_charge);
-
+                $('#final_total').html(final_total);
                 $('input[type=radio][name=payment_method]').change(function () {
                     var selectedPaymentMethod = $('input[type=radio][name=payment_method]:checked').val();
                     var wallet_used = $('.wallet_used').text();
@@ -1045,10 +1054,12 @@ $(document).ready(function () {
                     }
                     var delivery_charge = 0;
                     if (selectedPaymentMethod === 'COD') {
-                        delivery_charge = delivery_charge_with_cod.replace(',', '');
+                        console.log(delivery_charge_with_cod);
+
+                        delivery_charge = delivery_charge_with_cod;
 
                     } else {
-                        delivery_charge = delivery_charge_without_cod.replace(',', '');
+                        delivery_charge = delivery_charge_without_cod;
 
                     }
 

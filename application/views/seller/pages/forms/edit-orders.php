@@ -869,7 +869,7 @@
                         <div class="row m-2 ml-6 shiprocket_field_box d-none"
                             id="<?= $order_tracking_data[0]['shipment_id'] . '_shipment_id' ?>">
 
-                            <div class="col-md-5">
+                            <div class="col-md-5 col-md-5 d-flex gap-2">
                                 <?php
 
 
@@ -888,7 +888,7 @@
                                         if (isset($order_tracking_data[0]['is_canceled']) && $order_tracking_data[0]['is_canceled'] == 0) { ?>
                                             <a href="" title="Cancel Order" class="btn btn-primary btn-sm bg-primary-lt mr-1 cancel_shiprocket_order"
                                                 data-fromseller="1" name=<?php print_r($order_tracking_data[0]['shiprocket_order_id']); ?>><i
-                                                    class="ti ti-cancel fs-3"></i></a>
+                                                    class="ti ti-cancel fs-3"></i> Cancle Shiprocket Order  </a>
                                         <?php } ?>
 
                                         <?php if (isset($order_tracking_data[0]['label_url']) && !empty($order_tracking_data[0]['label_url'])) { ?>
@@ -898,7 +898,7 @@
                                         <?php } else { ?>
                                             <a href="" title="Generate Label" class="btn btn-primary btn-sm bg-primary-lt mr-1 generate_label"
                                                 data-fromseller="1" name=<?php print_r($order_tracking_data[0]['shipment_id']); ?>><i
-                                                    class="ti ti-tag fs-3"></i></a>
+                                                    class="ti ti-tag fs-3"></i> Generate Label </a>
                                         <?php } ?>
 
                                         <?php if (isset($order_tracking_data[0]['invoice_url']) && !empty($order_tracking_data[0]['invoice_url'])) { ?>
@@ -908,13 +908,13 @@
                                         <?php } else { ?>
                                             <a href="" title="Generate Invoice" class="btn btn-primary btn-sm bg-primary-lt mr-1 generate_invoice"
                                                 data-fromseller="1" name=<?php print_r($order_tracking_data[0]['shiprocket_order_id']); ?>><i
-                                                    class="fs-3 ti ti-invoice"></i></a>
+                                                    class="fs-3 ti ti-invoice"></i> Generate Invoice </a>
                                         <?php }
                                         if (isset($order_tracking_data[0]['awb_code']) && !empty($order_tracking_data[0]['awb_code'])) { ?>
                                             <a href="https://shiprocket.co/tracking/<?php echo $order_tracking_data[0]['awb_code']; ?>"
                                                 target=" _blank" title="Track Order" class="btn btn-primary action-btn btn-sm bg-primary-lt mr-1 track_order"
                                                 name=<?php print_r($order_tracking_data[0]['shiprocket_order_id']); ?>>
-                                                <i class="fs-3 ti ti-map-pin"></i></a>
+                                                <i class="fs-3 ti ti-map-pin"></i>  Track Order  </a>
                                         <?php } ?>
                                     <?php } ?>
                                 <?php } ?>

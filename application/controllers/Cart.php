@@ -1384,6 +1384,7 @@ class Cart extends CI_Controller
             }
             if (!empty($local_shipping_cart)) {
                 $delivery_charge = get_delivery_charge($_POST['address_id'], $_POST['total'], $this->data['user']->id);
+               
                 $this->response['delivery_charge_with_cod'] = $delivery_charge;
                 $this->response['delivery_charge_without_cod'] = $delivery_charge;
             }

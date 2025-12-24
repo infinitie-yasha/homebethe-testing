@@ -70,7 +70,9 @@ class Attribute_model extends CI_Model
 
         // Apply search filter again for the actual data query
         if (!empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
 
         // Apply status filter for sellers
@@ -225,7 +227,9 @@ class Attribute_model extends CI_Model
 
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_start();
             $count_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
         if (isset($where) && !empty($where)) {
             $count_res->where($where);
@@ -240,7 +244,9 @@ class Attribute_model extends CI_Model
         $search_res = $this->db->select(' attr.*,attr_set.name as attr_set_name ')->join('attribute_set attr_set', 'attr.attribute_set_id=attr_set.id', 'left');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -391,7 +397,9 @@ class Attribute_model extends CI_Model
 
         // Apply search filter again for the actual data query
         if (!empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
 
         // Apply status filter for sellers

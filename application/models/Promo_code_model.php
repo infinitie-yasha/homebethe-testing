@@ -63,7 +63,9 @@ class Promo_code_model extends CI_Model
         $search_res = $this->db->select(' p.`id` as id , p.`promo_code`, p.`image` , p.`message` , p.`start_date` , p.`end_date`, p.`discount` , p.`repeat_usage` ,p.`minimum_order_amount` ,p.`no_of_users` ,p.`discount_type` , p.`max_discount_amount`, p.`no_of_repeat_usage` , p.`status`,p.`is_cashback`,p.`list_promocode`');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -192,7 +194,9 @@ class Promo_code_model extends CI_Model
 
         $search_res = $this->db->select(' p.`id` as id ,datediff(end_date, start_date ) as remaining_days, p.`promo_code`, p.`image` , p.`message` , p.`start_date` , p.`end_date`, p.`discount` , p.`repeat_usage` ,p.`minimum_order_amount` ,p.`no_of_users` ,p.`discount_type` , p.`max_discount_amount`, p.`no_of_repeat_usage` , p.`status`,p.`is_cashback`,p.`list_promocode`');
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         $where = "(CURDATE() between start_date AND end_date) and status = 1 and list_promocode = 1";
 

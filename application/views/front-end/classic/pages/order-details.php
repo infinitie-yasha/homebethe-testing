@@ -9,10 +9,12 @@
                             <div class="col">
                                 <p class="text-muted">
                                     <?= !empty($this->lang->line('order_id')) ? str_replace('\\', '', $this->lang->line('order_id')) : 'Order ID' ?><span
-                                        class="font-weight-bold text-dark"> : <?= $order['id'] ?></span></p>
+                                        class="font-weight-bold text-dark"> : <?= $order['id'] ?></span>
+                                </p>
                                 <p class="text-muted">
                                     <?= !empty($this->lang->line('place_on')) ? str_replace('\\', '', $this->lang->line('place_on')) : 'Place On' ?><span
-                                        class="font-weight-bold text-dark"> : <?= $order['date_added'] ?></span> </p>
+                                        class="font-weight-bold text-dark"> : <?= $order['date_added'] ?></span>
+                                </p>
                             </div>
 
 
@@ -36,7 +38,8 @@
                         <br>
                         <?php if (isset($order['notes']) && !empty($order['notes'])) { ?>
                             <div>
-                               <strong>  Special Note : </strong>  <p> <?= $order['notes'] ?> </p>
+                                <strong> Special Note : </strong>
+                                <p> <?= $order['notes'] ?> </p>
                             </div>
                         <?php } ?>
                         <br>
@@ -120,17 +123,20 @@
                                     <?php } ?>
                                     <p class="text-muted">
                                         <?= !empty($this->lang->line('quantity')) ? str_replace('\\', '', $this->lang->line('quantity')) : 'Quantity' ?>
-                                        : <?= $item['quantity'] ?></p>
+                                        : <?= $item['quantity'] ?>
+                                    </p>
                                     <?php if ($item['otp'] != 0) { ?>
                                         <p class="text-muted">
                                             <?= !empty($this->lang->line('otp')) ? str_replace('\\', '', $this->lang->line('otp')) : 'OTP' ?>
-                                            <span class="font-weight-bold text-dark"> : <?= $item['otp'] ?></span> </p>
+                                            <span class="font-weight-bold text-dark"> : <?= $item['otp'] ?></span>
+                                        </p>
                                     <?php } ?>
                                     <?php
                                     if (!empty($item['url']) || !empty($item['shiprocket_order_tracking_url'])) { ?>
                                         <h6 class="h5">
                                             <?= !empty($this->lang->line('order_tracking_details')) ? str_replace('\\', '', $this->lang->line('order_tracking_details')) : 'Order tracking details' ?>
-                                            : </h6>
+                                            :
+                                        </h6>
 
                                         <?php if (isset($item['courier_agency']) && !empty($item['courier_agency'])) { ?>
                                             <p> <span class="text-muted">
@@ -141,7 +147,8 @@
                                             <p class="text-muted" data-toggle="tooltip" data-placement="top"
                                                 title="<?= !empty($this->lang->line('copy_this_tracking_id_and_trace_your_order_with_courier_agency')) ? str_replace('\\', '', $this->lang->line('copy_this_tracking_id_and_trace_your_order_with_courier_agency')) : 'Copy this Tracking ID and trace your order with Courier Agency' ?>">
                                                 <?= !empty($this->lang->line('tracking_id')) ? str_replace('\\', '', $this->lang->line('tracking_id')) : 'Tracking ID' ?>
-                                                <span class="font-weight-bold text-dark"> : <?= $item['tracking_id'] ?></span> </p>
+                                                <span class="font-weight-bold text-dark"> : <?= $item['tracking_id'] ?></span>
+                                            </p>
                                         <?php } ?>
                                         <?php if (isset($item['url']) && !empty($item['url'])) { ?>
                                             <p class="text-muted mb-0">
@@ -149,16 +156,16 @@
                                                 :
                                                 <a href="<?= $item['url'] ?>"
                                                     title="<?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?>">
-                                                    <?= $item['url'] ?></a>
+                                                   <?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?> </a>
                                             </p>
                                         <?php } ?>
                                         <?php if (isset($item['shiprocket_order_tracking_url']) && !empty($item['shiprocket_order_tracking_url'])) { ?>
                                             <p class="text-muted mb-0">
                                                 <?= !empty($this->lang->line('shiprocket_order_tracking_url')) ? str_replace('\\', '', $this->lang->line('shiprocket_order_tracking_url')) : 'Shiprocket Order Tracking Url' ?>
                                                 :
-                                                <a href="<?= $item['shiprocket_order_tracking_url'] ?>"
+                                                <a class="btn btn-outline-info" target="_blank" href="<?= $item['shiprocket_order_tracking_url'] ?>"
                                                     title="<?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?>">
-                                                    <?= $item['shiprocket_order_tracking_url'] ?></a>
+                                                    <?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?></a>
                                             </p>
                                         <?php }
                                     } ?>
@@ -186,8 +193,9 @@
                                         $date = date('Y-m-d', $timestemp);
                                         $today = date('Y-m-d');
                                         $return_till = date('Y-m-d', strtotime($order_date . ' + ' . $settings['max_product_return_days'] . ' days'));
+                                        
+                                        if ($today < $return_till && $item['type'] != 'digital_product' && $item['is_returnable'] == 1) { ?>
 
-                                        if ($today < $return_till && $item['type'] != 'digital_product') { ?>
                                             <div class="col my-auto p-0">
                                                 <a class="update-order-item btn btn-xs btn-danger text-white mt-3 m-0"
                                                     data-status="returned" data-item-id="<?= $item['id'] ?>"
@@ -361,14 +369,17 @@
                                 $date = date('Y-m-d', $timestemp);
                                 $today = date('Y-m-d');
                                 $return_till = date('Y-m-d', strtotime($order_date . ' + ' . $settings['max_product_return_days'] . ' days'));
-                                echo "<br>";
+
                                 if ($today < $return_till) { ?>
                                     <div class="col my-auto ">
                                         <a class="update-order block buttons button-sm btn-6-3 mt-3 m-0" data-status="returned"
                                             data-order-id="<?= $order['id'] ?>"><?= !empty($this->lang->line('return')) ? str_replace('\\', '', $this->lang->line('return')) : 'Return' ?></a>
                                     </div>
                                 <?php } ?>
-                            <?php } ?>
+                            <?php }
+
+
+                            ?>
                         </div>
                     </div>
 
@@ -377,13 +388,26 @@
 
                         <div class="modal-header py-3">
                             <h3 class="modal-title" id="returnModalLabel">Return Item</h3>
-                            <button data-iziModal-close class="icon-close">x</button>
-
                         </div>
                         <div class="modal-body py-0">
                             <div class="d-flex flex-column flex-wrap gap-2 mb-3">
                                 <input type="hidden" id="returnItemId" value="<?= $item['id'] ?>">
-                                <input type="hidden" id="status" value="returned">
+                                <?php
+                                $status = ["awaiting", "received", "processed", "shipped", "delivered", "cancelled", "returned"];
+
+                                $active_status = $item['active_status']; // example
+                                
+                                $input_status = '';
+
+                                if ($active_status === 'received') {
+                                    $input_status = 'cancelled';
+                                } elseif ($active_status === 'delivered') {
+                                    $input_status = 'returned';
+                                }
+                                ?>
+
+                                <input type="hidden" id="status" value="<?= htmlspecialchars($input_status) ?>">
+
 
                                 <!-- Predefined reason option -->
                                 <?php foreach ($return_reasons as $return_reason) { ?>
@@ -391,8 +415,22 @@
                                         class="return-reason-card py-1 d-flex align-items-center border rounded cursor-pointer">
                                         <input type="radio" name="return_reason"
                                             value="<?= $return_reason['return_reason'] ?>" class="reason-radio">
-                                        <img src="<?= base_url() . ($return_reason['image']) ?>" alt="Reason Icon"
-                                            class="mx-2">
+                                        <?php
+                                        if (!empty($return_reason['image'])) {
+                                            if (preg_match('#^https?://#', $return_reason['image'])) {
+                                                $img = $return_reason['image'];
+                                            } elseif (file_exists(FCPATH . $return_reason['image'])) {
+                                                $img = base_url($return_reason['image']);
+                                            } else {
+                                                $img = base_url(NO_IMAGE);
+                                                $img = base_url(NO_IMAGE);
+                                            }
+                                        } else {
+                                            $img = base_url(NO_IMAGE);
+                                            $img = base_url(NO_IMAGE);
+                                        }
+                                        ?>
+                                        <img src="<?= $img ?>" alt="Reason Icon" class="mx-2">
                                         <p class="fs-14 mb-0"><?= $return_reason['return_reason'] ?></p>
                                     </label>
                                 <?php } ?>

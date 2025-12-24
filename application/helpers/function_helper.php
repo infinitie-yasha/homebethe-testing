@@ -1587,12 +1587,12 @@ function get_variants_values_by_pid($id, $status = [1])
         ->join('attribute_values av ', 'FIND_IN_SET(av.id, pv.attribute_value_ids ) > 0', 'left')
         ->join('attributes a', 'a.id = av.attribute_id', 'left')
         ->where(['pv.product_id' => $id])->where_in('pv.status', $status)->group_by('pv.id')->order_by('pv.id')->get('product_variants pv')->result_array();
-    
-        // echo "<pre>";
-        // print_r($varaint_values);
-        // die;
 
-        if (!empty($varaint_values)) {
+    // echo "<pre>";
+    // print_r($varaint_values);
+    // die;
+
+    if (!empty($varaint_values)) {
         for ($i = 0; $i < count($varaint_values); $i++) {
             if ($varaint_values[$i]['swatche_type'] != "") {
                 $swatche_type = array();
@@ -2478,7 +2478,7 @@ function validate_order_status($order_ids, $status, $table = 'order_items', $use
                 $returnable_count += 1;
             }
             if ($product_data[$i]['is_cancelable'] == 1) {
-                $cancelable_count += 1;
+                $cancelable_count += 1; 
             }
 
             /* check if the posted status is present in any of the variants */
@@ -2809,11 +2809,11 @@ function get_cart_total($user_id, $product_variant_id = false, $is_saved_for_lat
     $t->db->join('categories ctg', 'p.category_id = ctg.id', 'left');
     $t->db->where(['p.status' => '1', 'pv.status' => 1, 'sd.status' => 1]);
 
-    
+
     $t->db->group_by('c.id')->order_by('c.id', "DESC");
 
 
-    
+
 
     $data = $t->db->get('cart c')->result_array();
 
@@ -5378,6 +5378,8 @@ function get_delivery_charge($address_id, $total = 0, $user_id = '')
     $default_delivery_charge = $shipping_settings['default_delivery_charge'];
 
 
+
+
     if ((isset($system_settings['area_wise_delivery_charge']) && !empty($system_settings['area_wise_delivery_charge']))) {
 
         $cart_user_data = $t->cart_model->get_user_cart($user_id);
@@ -5444,11 +5446,17 @@ function get_delivery_charge($address_id, $total = 0, $user_id = '')
                 if ((isset($address[0]['area_id']) && !empty($address[0]['area_id'])) || (isset($address[0]['pincode']) && !empty($address[0]['pincode']))) {
                     $area = fetch_details('areas', ['id' => $address[0]['area_id']], 'delivery_charges,minimum_free_delivery_order_amount');
 
+
+
+
                     if ($t->db->field_exists('delivery_charges', 'zipcodes') && $t->db->field_exists('minimum_free_delivery_order_amount', 'zipcodes')) {
                         $zipcode = fetch_details('zipcodes', ['zipcode' => $address[0]['pincode'], 'city_id' => $address[0]['city_id']], 'delivery_charges,minimum_free_delivery_order_amount');
+                     
                     }
+                   
                     if (isset($area[0]['minimum_free_delivery_order_amount']) || isset($zipcode[0]['minimum_free_delivery_order_amount'])) {
                         $min_amount = isset($area[0]['minimum_free_delivery_order_amount']) && !empty($area[0]['minimum_free_delivery_order_amount']) ? $area[0]['minimum_free_delivery_order_amount'] : $zipcode[0]['minimum_free_delivery_order_amount'];
+
                         $delivery_charge_total = isset($area[0]['delivery_charges']) && !empty($area[0]['delivery_charges']) ? $area[0]['delivery_charges'] : $zipcode[0]['delivery_charges'];
                     }
                 }
@@ -5635,7 +5643,7 @@ function is_product_delivarable($type, $type_id, $product_id)
     // ----- CITY BASED CHECK -----
     if ($city_id) {
         $city_exists = in_array($city_id, $seller_cities);
-        
+
         // Seller-level check
         // if (
         //     $seller_city_type === 0 || // None
@@ -7746,7 +7754,8 @@ function get_available_payment_gateways(array $settings): array
     $result = [];
 
     foreach ($map as $gateway => [$enabled, $fields]) {
-        if (empty($settings[$enabled])) continue;
+        if (empty($settings[$enabled]))
+            continue;
 
         foreach ($fields as $k => $v) {
             $result[$gateway][is_string($k) ? $v : $v] = $settings[$k] ?? $settings[$v] ?? null;

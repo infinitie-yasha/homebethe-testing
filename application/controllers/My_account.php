@@ -226,6 +226,9 @@ class My_account extends CI_Controller
                     'allowed_types' => $allowed_media_types,
                     'max_size' => 8000,
                 ];
+
+
+
                 if (!empty($_FILES['return_item_images']['name'][0]) && isset($_FILES['return_item_images']['name'])) {
                     $other_image_cnt = count($_FILES['return_item_images']['name']);
                     $other_img = $this->upload;
@@ -280,7 +283,8 @@ class My_account extends CI_Controller
                 if ($return_data['return_reason'] == 'other') {
                     $return_data['return_reason'] = $return_data['other_reason'];
                 }
-                $return_data['return_item_image'] = implode(',', $attachments);
+
+                $return_data['return_item_image'] = !empty($attachments) ? implode(',', $attachments) : '';
             }
 
             $this->response = $this->order_model->update_order_item($_POST['order_item_id'], trim($_POST['status']), fromapp: true, return_data: $return_data);

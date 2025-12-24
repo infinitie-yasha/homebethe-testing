@@ -2441,14 +2441,40 @@ $("#seller-login-toggle-type").on('change', function () {
 $("#btn-send-otp").on("click", function () {
 
     let mobile = $("#mobile").val().trim();
+    let $btn = $(this); // ✅ store reference
+
     if (!/^\d{10}$/.test(mobile)) {
         showToast("Enter valid 10 digit mobile number", "error");
         return;
     }
-    sendOtp("+91" + mobile);
-    $(this).html('Sending...');
-    $(this).prop("disabled", true);
+
+    $btn.html('Sending...');
+    $btn.prop("disabled", true);
+
+    $.ajax({
+        type: "get",
+        url: base_url + "seller/auth/check_seller",
+        data: { mobile: mobile },
+        success: function (response) {
+
+            if (response.error) {
+                $btn.html('Send OTP');
+                $btn.prop("disabled", false);
+                showToast(response.message, 'error');
+                return;
+            } else {
+                sendOtp("+91" + mobile);
+            }
+        },
+        error: function () {
+            $btn.html('Send OTP');
+            $btn.prop("disabled", false);
+            showToast("Something went wrong", "error");
+        }
+    });
+
 });
+
 function sendOtp(phone) {
 
     if (!window.recaptchaVerifier) {
@@ -2528,8 +2554,29 @@ if (document.getElementById('seller_login_form')) {
                 showToast(validate.errorMessages.join('|'), 'error');
                 return;
             }
-            // Password login
-            doLogin();
+
+            let mobile = $("#mobile").val().trim();
+
+            
+            $.ajax({
+                type: "get",
+                url: base_url + "seller/auth/check_seller",
+                data: { mobile: mobile },
+                success: function (response) {
+                    if (response.error) {
+                        console.log(response);
+                        showToast(response.message, 'error');
+                        return;
+                    } else {
+                        doLogin();
+                    }
+                },
+                error: function () {
+                    showToast("Something went wrong", "error");
+                }
+            });
+
+
         }
 
     });

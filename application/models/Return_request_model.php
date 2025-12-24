@@ -75,7 +75,9 @@ class Return_request_model extends CI_Model
             ->join('products p', 'p.id=rr.product_id')
             ->join('order_items oi', 'oi.id=rr.order_item_id');
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);

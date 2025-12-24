@@ -97,7 +97,7 @@ class Auth extends CI_Controller
 
         $this->form_validation->set_rules('payment_gateway', 'Withdrawal Payment Gateway', 'trim|required|xss_clean');
 
-        if ( isset($_POST['have_gst']) && $_POST['have_gst'] == 'on') {
+        if (isset($_POST['have_gst']) && $_POST['have_gst'] == 'on') {
             $this->form_validation->set_rules('tax_name', 'Tax Name', 'trim|required|xss_clean');
             $this->form_validation->set_rules('tax_number', 'Tax Number', 'trim|required|xss_clean');
         }
@@ -524,9 +524,9 @@ class Auth extends CI_Controller
                     "withdrawal_payment_gateway" => (isset($_POST['payment_gateway']) && !empty($_POST['payment_gateway'])) ? $this->input->post('payment_gateway', true) : null,
                 );
 
-                 if (!empty($_FILES['pan_image']['name'])) {
+                if (!empty($_FILES['pan_image']['name'])) {
                     $seller_data['pan_upload'] = $pan_image;
-                 }
+                }
 
                 if ($this->Seller_model->add_seller($seller_data)) {
                     $group_id = $this->ion_auth->get_users_groups($user_id_to_seller)->row()->id;
@@ -910,5 +910,55 @@ class Auth extends CI_Controller
         } else {
             return sendWebJsonResponse(true, "Users already exists");
         }
+    }
+
+    public function check_seller()
+    {
+
+        $mobile = $this->input->get('mobile', true);
+        if (empty($mobile)) {
+            return sendWebJsonResponse(true, "Mobile is required !");
+        }
+        $user_exits = $this->db->where('mobile', $mobile)->get('users')->row_array();
+
+        if ($user_exits) {
+            $groups = [
+                "1" => "Administrator",
+                "2" => "General User",
+                "3" => "Delivery Boys",
+                "4" => "Sellers",
+                "5" => "Affiliate Users"
+            ];
+
+            $user_group = $this->db->where('user_id', $user_exits['id'])->get('users_groups')->row_array();
+            if (empty($user_group)) {
+            }
+
+            if ($user_group['group_id'] != 4) {
+                $value = $groups[$user_group['group_id']];
+                return sendWebJsonResponse(true, "This mobile is registered as $value. Cannot login as Seller");
+            }
+
+            $seller_data = $this->db->where('user_id', $user_exits['id'])->get('seller_data')->row_array();
+
+            if ($seller_data['status'] == "1") {
+                return sendWebJsonResponse(false, "Users can loggin");
+            }
+
+            if ($seller_data['status'] == "2") {
+                return sendWebJsonResponse(true, "Your Account is not approved please wait for approval");
+            }
+
+            if ($seller_data['status'] == "0") {
+                return sendWebJsonResponse(true, "Your Account is deactived, Cannot lgoin");
+            }
+
+            if ($seller_data['status'] == "7") {
+                return sendWebJsonResponse(true, "This Account had beed removed by admin. please contact support");
+            }
+        } else {
+            return sendWebJsonResponse(true, "Mobile not found pleaser register.");
+        }
+
     }
 }

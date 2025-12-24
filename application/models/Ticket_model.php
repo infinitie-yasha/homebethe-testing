@@ -175,7 +175,9 @@ class Ticket_model extends CI_Model
         $search_res = $this->db->select('t.*,tty.title,u.username')->join('ticket_types tty', 'tty.id=t.ticket_type_id', 'left')->join('users u', 'u.id=t.user_id', 'left');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -553,7 +555,9 @@ class Ticket_model extends CI_Model
         $search_res = $this->db->select('tm.*,t.subject,u.username')->join('tickets t', 't.id=tm.ticket_id', 'left')->join('users u', 'u.id=tm.user_id', 'left');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+             $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -856,7 +860,9 @@ class Ticket_model extends CI_Model
         $search_res = $this->db->select('*');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);

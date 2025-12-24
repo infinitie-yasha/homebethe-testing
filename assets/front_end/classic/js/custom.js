@@ -1413,7 +1413,8 @@ $(function () {
 
                     if (data.check_deliverability.city_wise_deliverability == 1) {
                         if (data.type != "digital_product") {
-
+                            console.log("hehehehe");
+                            
                             variant_attributes += '<form class="mt-2 validate_city_quick_view "   method="post" >' +
 
                                 '<div class="d-flex">' +
@@ -5417,7 +5418,7 @@ function display_cart(cart) {
 
             const price = item?.special_price ?? item?.price ?? 0;
 
-          
+
 
             const min = item?.min ?? item?.minimum_order_quantity ?? 0;
             const step = item?.step ?? item?.quantity_step_size ?? 0;
@@ -5718,16 +5719,36 @@ $('.move-to-cart').on('click', function (e) {
 
 })
 
+$(document).ready(function () {
+    $('.returnModal').iziModal({
+        title: 'Return Item',
+        width: 600,
+        overlayClose: false,
+        closeOnEscape: true,
+        padding: 0
+    });
+});
+
 
 $(document).on('click', '.update-order-item', function (e) {
     e.preventDefault();
-    console.log('update-order-item clickeddd');
 
     const otherReasonRadio = document.getElementById("otherReasonRadio");
     const otherReasonField = document.getElementById("otherReasonField");
     const reasonRadios = document.querySelectorAll(".reason-radio");
 
-    console.log(reasonRadios.attr('checked', true));
+    $('.returnModal').iziModal('open');
+
+    if ($("#status").val() == "cancelled") {     
+        $("#returnModalLabel").html('Select Reason');
+        $('.returnModal')
+            .find('.iziModal-header-title')
+            .html('Select Reason');
+    }
+    
+
+    
+    // console.log($("#returnModalLabel").find('.iziModal-header-title'));
 
 
     reasonRadios.forEach(radio => {
@@ -5743,14 +5764,118 @@ $(document).on('click', '.update-order-item', function (e) {
     });
 })
 
+$(document).on('click', '.update-order', function (e) {
+
+    e.preventDefault();
+    console.log('update-order is clickedd');
+
+    var formdata = new FormData();
+
+    var order_id = $(this).data('order-id');
+
+    var status = $(this).data('status');
+
+    var temp = '';
+
+    if (status == "cancelled") {
+
+        temp = "Cancel";
+
+    } else {
+
+        temp = 'Return';
+
+    }
+
+    if (confirm('Are you sure you want to ' + temp + ' this order ?')) {
+
+        var t = $(this);
+
+        var btn_text = t.text();
+
+        formdata.append(csrfName, csrfHash);
+
+        formdata.append('order_id', order_id);
+
+        formdata.append('status', status);
+
+        $.ajax({
+
+            type: 'POST',
+
+            url: base_url + 'my-account/update-order',
+
+            data: formdata,
+
+            cache: false,
+
+            contentType: false,
+
+            processData: false,
+
+            dataType: 'json',
+
+            beforeSend: function () {
+
+                t.html('Please Wait').attr('disabled', true);
+
+            },
+
+            success: function (result) {
+
+                csrfName = result.csrfName;
+
+                csrfHash = result.csrfHash;
+
+                if (result.error == false) {
+
+                    Toast.fire({
+
+                        icon: 'success',
+
+                        title: result.message
+
+                    });
+
+                    setTimeout(function () {
+
+                        window.location.reload();
+
+                    }, 3000)
+
+                } else {
+
+                    Toast.fire({
+
+                        icon: 'error',
+
+                        title: result.message
+
+                    });
+
+                }
+
+                t.html(btn_text).attr('disabled', false);
+
+            }
+
+        });
+
+    }
+
+})
 $(document).on('click', '.confirmReturn', function (e) {
     e.preventDefault();
 
     let itemId = $("#returnItemId").val();
     let status = $("#status").val();
+    
+    
     let selectedReason = $("input[name='return_reason']:checked").val();
     let otherReason = $("#otherReasonField").val();
     let returnImage = $("#return_item_image")[0].files[0]; // Get selected image file
+
+
 
     if (!selectedReason) {
         alert("Please select a return reason.");
@@ -5765,7 +5890,7 @@ $(document).on('click', '.confirmReturn', function (e) {
         formData.append("other_reason", otherReason);
     }
     if (returnImage) {
-        formData.append("return_item_image", returnImage['name']);
+        formData.append("return_item_image", returnImage);
     }
     formData.append(csrfName, csrfHash);
 
@@ -5796,189 +5921,91 @@ $(document).on('click', '.confirmReturn', function (e) {
     })
 }),
 
-    $('.update-order').on('click', function (e) {
+
+
+    // $('#add-address-form').on('submit', function (e) {
+    $(document).on('submit', '#add-address-form', function (e) {
 
         e.preventDefault();
 
-        var formdata = new FormData();
+        var formdata = new FormData(this);
+        var currentUrl = window.location.href;
+        var pincode_test = $('#pincode option:selected').text();
+        // console.log(currentUrl)
+        // return;
 
-        var order_id = $(this).data('order-id');
+        formdata.append(csrfName, csrfHash);
+        formdata.append('pincode_full', pincode_test);
 
-        var status = $(this).data('status');
+        $.ajax({
 
-        var temp = '';
+            type: 'POST',
 
-        if (status == "cancelled") {
+            data: formdata,
 
-            temp = "Cancel";
+            url: $(this).attr('action'),
 
-        } else {
+            dataType: 'json',
 
-            temp = 'Return';
+            cache: false,
 
-        }
+            contentType: false,
 
-        if (confirm('Are you sure you want to ' + temp + ' this order ?')) {
+            processData: false,
 
-            var t = $(this);
+            beforeSend: function () {
 
-            var btn_text = t.text();
+                $('#save-address-submit-btn').val('Please Wait...').attr('disabled', true);
 
-            formdata.append(csrfName, csrfHash);
+            },
 
-            formdata.append('order_id', order_id);
+            success: function (result) {
+                // console.log(result);
 
-            formdata.append('status', status);
+                csrfName = result.csrfName;
 
-            $.ajax({
+                csrfHash = result.csrfHash;
 
-                type: 'POST',
+                if (result.error == false) {
 
-                url: base_url + 'my-account/update-order',
+                    Toast.fire({
+                        icon: 'success',
+                        title: result.message
+                    });
+                    // $('#save-address-result').html("<div class='alert alert-success'>" + result.message + "</div>").delay(1500).fadeOut();
 
-                data: formdata,
+                    $('#add-address-form')[0].reset();
 
-                cache: false,
-
-                contentType: false,
-
-                processData: false,
-
-                dataType: 'json',
-
-                beforeSend: function () {
-
-                    t.html('Please Wait').attr('disabled', true);
-
-                },
-
-                success: function (result) {
-
-                    csrfName = result.csrfName;
-
-                    csrfHash = result.csrfHash;
-
-                    if (result.error == false) {
-
-                        Toast.fire({
-
-                            icon: 'success',
-
-                            title: result.message
-
-                        });
-
-                        setTimeout(function () {
-
-                            window.location.reload();
-
-                        }, 3000)
-
-                    } else {
-
-                        Toast.fire({
-
-                            icon: 'error',
-
-                            title: result.message
-
-                        });
-
+                    $('#address_list_table').bootstrapTable('refresh');
+                    $("#add-address-modal").modal('hide');
+                    if ($('#add-address-modal').data('iziModal')) {
+                        $('#add-address-modal').iziModal('close');
+                    }
+                    if (currentUrl.includes('/checkout')) {
+                        $(".address-modal").iziModal('open');
                     }
 
-                    t.html(btn_text).attr('disabled', false);
+                } else {
+                    console.log(result.message);
+
+                    Toast.fire({
+
+                        icon: 'error',
+
+                        title: result.message
+
+                    });
+                    // $('#save-address-result').html("<div class='alert alert-danger'>" + result.message + "</div>").delay(1500).fadeOut();
 
                 }
 
-            });
-
-        }
-
-    })
-
-// $('#add-address-form').on('submit', function (e) {
-$(document).on('submit', '#add-address-form', function (e) {
-
-    e.preventDefault();
-
-    var formdata = new FormData(this);
-    var currentUrl = window.location.href;
-    var pincode_test = $('#pincode option:selected').text();
-    // console.log(currentUrl)
-    // return;
-
-    formdata.append(csrfName, csrfHash);
-    formdata.append('pincode_full', pincode_test);
-
-    $.ajax({
-
-        type: 'POST',
-
-        data: formdata,
-
-        url: $(this).attr('action'),
-
-        dataType: 'json',
-
-        cache: false,
-
-        contentType: false,
-
-        processData: false,
-
-        beforeSend: function () {
-
-            $('#save-address-submit-btn').val('Please Wait...').attr('disabled', true);
-
-        },
-
-        success: function (result) {
-            // console.log(result);
-
-            csrfName = result.csrfName;
-
-            csrfHash = result.csrfHash;
-
-            if (result.error == false) {
-
-                Toast.fire({
-                    icon: 'success',
-                    title: result.message
-                });
-                // $('#save-address-result').html("<div class='alert alert-success'>" + result.message + "</div>").delay(1500).fadeOut();
-
-                $('#add-address-form')[0].reset();
-
-                $('#address_list_table').bootstrapTable('refresh');
-                $("#add-address-modal").modal('hide');
-                if ($('#add-address-modal').data('iziModal')) {
-                    $('#add-address-modal').iziModal('close');
-                }
-                if (currentUrl.includes('/checkout')) {
-                    $(".address-modal").iziModal('open');
-                }
-
-            } else {
-                console.log(result.message);
-
-                Toast.fire({
-
-                    icon: 'error',
-
-                    title: result.message
-
-                });
-                // $('#save-address-result').html("<div class='alert alert-danger'>" + result.message + "</div>").delay(1500).fadeOut();
+                $('#save-address-submit-btn').val('Save').attr('disabled', false);
 
             }
 
-            $('#save-address-submit-btn').val('Save').attr('disabled', false);
-
-        }
+        })
 
     })
-
-})
 $(document).ready(function () {
     if ($('.add-address-modal').length) {
         $('.add-address-modal').iziModal({

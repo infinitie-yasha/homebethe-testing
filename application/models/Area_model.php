@@ -114,7 +114,9 @@ class Area_model extends CI_Model
         }
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -241,7 +243,9 @@ class Area_model extends CI_Model
             $search_res = $this->db->select(' zipcodes.* ,cities.name as city_name')->join('cities', 'zipcodes.city_id=cities.id', 'left');
         }
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
@@ -533,7 +537,7 @@ class Area_model extends CI_Model
 
         $cat_search_res = $this->db->limit($limit, $offset)->get()->result_array();
 
-     
+
 
         // Prepare Response
         $bulkData = [
@@ -620,7 +624,9 @@ class Area_model extends CI_Model
 
         $search_res = $this->db->select('*');
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_start();
             $search_res->or_like($multipleWhere);
+            $this->db->group_end();
         }
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
