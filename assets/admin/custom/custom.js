@@ -123,6 +123,9 @@ $(document).on('click', '.delete-product-rating', function () {
                             $('table').bootstrapTable('refresh');
                             csrfName = response['csrfName'];
                             csrfHash = response['csrfHash'];
+                            setTimeout(function () {
+                                location.reload();
+                            }, 600);
                         } else {
                             Swal.fire('Oops...', response.message, 'warning');
                             $('table').bootstrapTable('refresh');
@@ -555,8 +558,8 @@ function create_variants(preproccessed_permutation_result = false, from) {
             html += '<div ondragstart="return false;"><a class="btn btn-outline-primary btn-sm mb-3" href="javascript:void(0)" id="expand_all">Expand All</a>' +
                 '<a class="btn btn-outline-primary btn-sm mb-3 ml-4" href="javascript:void(0)" id="collapse_all">Collapse All</a></div>';
             $.each(result, function (a, b) {
-                console.log( a,b);
-                
+                console.log(a, b);
+
                 variant_counter++;
                 var attr_name = 'pro_attr_' + variant_counter;
                 html += '<div class="form-group move row my-auto p-2 border rounded bg-gray-light product-variant-selectbox"><div class="col-1 text-center my-auto"><i class="fas fa-sort"></i></div>';

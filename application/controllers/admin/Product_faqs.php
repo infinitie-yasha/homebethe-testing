@@ -91,6 +91,12 @@ class Product_faqs extends CI_Controller
                 foreach ($fields as $field) {
                     $product_faq[$field] = $this->input->post($field, true) ?? "";
                 }
+                if ($product_faq['edit_product_faq']) {
+                    $faq = $this->db->where('id', $product_faq['edit_product_faq'])->get('product_faqs')->row_array();
+                    if(!empty($faq)){
+                        $product_faq['user_id'] = $faq['user_id'];
+                    }
+                }
                 $this->product_faqs_model->add_product_faqs($product_faq);
 
                 $message = (isset($_POST['edit_product_faq']) && !empty($_POST['edit_product_faq'])) ? 'FAQ Updated Successfully' : 'FAQ Added Successfully';

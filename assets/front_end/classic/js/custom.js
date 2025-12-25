@@ -1413,8 +1413,7 @@ $(function () {
 
                     if (data.check_deliverability.city_wise_deliverability == 1) {
                         if (data.type != "digital_product") {
-                            console.log("hehehehe");
-                            
+
                             variant_attributes += '<form class="mt-2 validate_city_quick_view "   method="post" >' +
 
                                 '<div class="d-flex">' +
@@ -1472,7 +1471,12 @@ $(function () {
                         }
                     }
                     if (data.check_deliverability.pincode_wise_deliverability == 1) {
+                        err_msg = '';
                         if (data.type != "digital_product") {
+                            if (data.type == 'simple_product') {
+                                variant_attributes = '';
+                            }
+
 
                             variant_attributes += '<form class="mt-2 validate_zipcode_quick_view "   method="post" >' +
 
@@ -1501,7 +1505,9 @@ $(function () {
                                 ' </form>';
 
                         } else {
-
+                            if (data.type == 'simple_product') {
+                                variant_attributes = '';
+                            }
                             variant_attributes += '<form class="mt-2 validate_zipcode_quick_view "   method="post" >' +
 
                                 '<div class="d-flex">' +
@@ -1526,10 +1532,11 @@ $(function () {
 
                         }
 
-                        if (data.type == 'simple_product') {
-                            variant_attributes = '';
-                        }
+
                     }
+
+
+
 
                     $('#modal-product-variant-attributes').html(variant_attributes);
 
@@ -2748,7 +2755,7 @@ $(document).ready(function () {
 
         }
 
-        var min = $(this).attr("min");
+        var min = $(this).attr("min") ?? 1;
 
         let max = $(this).attr("max");
 
@@ -2763,16 +2770,12 @@ $(document).ready(function () {
 
 
 
-        if (qty <= 0) {
-
+        if (qty <= min) {
             Toast.fire({
-
                 icon: 'error',
-
                 title: `Oops! Please set minimum ${min} quantity for product`
-
             });
-
+            $(this).val(min);
             return;
 
         }
@@ -5733,21 +5736,60 @@ $(document).ready(function () {
 $(document).on('click', '.update-order-item', function (e) {
     e.preventDefault();
 
+    const status = $("#status").val();
+    const itemId = $("#returnItemId").val();
+
+    //cancelled
+    if (status == "cancelled") {
+        let formData = new FormData();
+        formData.append("order_item_id", itemId);
+        formData.append("status", status);
+        formData.append(csrfName, csrfHash);
+
+        $.ajax({
+            type: "POST",
+            url: base_url + "my-account/update-order-item-status",
+            data: formData,
+            cache: !1,
+            contentType: !1,
+            processData: !1,
+            dataType: "json",
+            beforeSend: function () {
+                $("#confirmReturn").prop("disabled", true).text("Processing...");
+            },
+            success: function (e) {
+
+                csrfName = e.csrfName, csrfHash = e.csrfHash, 0 == e.error ? (Toast.fire({
+                    icon: "success",
+                    title: e.message
+                }), setTimeout(function () {
+                    window.location.reload()
+                }, 3e3)) : Toast.fire({
+                    icon: "error",
+                    title: e.message
+                })
+                $("#confirmReturn").prop("disabled", false).text("Confirm Return");
+            }
+        })
+
+        return;
+    }
+
     const otherReasonRadio = document.getElementById("otherReasonRadio");
     const otherReasonField = document.getElementById("otherReasonField");
     const reasonRadios = document.querySelectorAll(".reason-radio");
 
     $('.returnModal').iziModal('open');
 
-    if ($("#status").val() == "cancelled") {     
+    if ($("#status").val() == "cancelled") {
         $("#returnModalLabel").html('Select Reason');
         $('.returnModal')
             .find('.iziModal-header-title')
             .html('Select Reason');
     }
-    
 
-    
+
+
     // console.log($("#returnModalLabel").find('.iziModal-header-title'));
 
 
@@ -5869,8 +5911,8 @@ $(document).on('click', '.confirmReturn', function (e) {
 
     let itemId = $("#returnItemId").val();
     let status = $("#status").val();
-    
-    
+
+
     let selectedReason = $("input[name='return_reason']:checked").val();
     let otherReason = $("#otherReasonField").val();
     let returnImage = $("#return_item_image")[0].files[0]; // Get selected image file
@@ -6623,19 +6665,41 @@ $('#contact-us-form').on('submit', function (e) {
         success: function (result) {
             csrfName = result.csrfName;
             csrfHash = result.csrfHash;
-            if (result.error == false) {
+
+            if (result.error === false) {
+
                 Toast.fire({
                     icon: 'success',
                     title: result.message
                 });
+
                 $('#contact-us-form')[0].reset();
+
             } else {
-                Toast.fire({
-                    icon: 'error',
-                    title: result.message
-                });
+
+                // message is an object (validation errors)
+                if (typeof result.message === 'object') {
+
+                    $.each(result.message, function (field, msg) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: msg
+                        });
+                    });
+
+                }
+                // fallback if message is a string
+                else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: result.message
+                    });
+                }
             }
-            $('#contact-us-submit-btn').html(submit_btn_html).attr('disabled', false);
+
+            $('#contact-us-submit-btn')
+                .html(submit_btn_html)
+                .attr('disabled', false);
         }
     })
 })
@@ -6711,18 +6775,19 @@ $('#delete_rating').on('click', function (e) {
                 csrfHash = result['csrfHash'];
 
                 if (result.error == false) {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 600);
+
 
                     Toast.fire({
-
                         icon: 'success',
-
                         title: result.message
-
                     });
 
                     $('#delete_rating').parent().parent().parent().remove();
-
                     $('#no_ratings').text(result.data.rating[0].no_of_rating);
+
 
                 } else {
 
@@ -7954,6 +8019,17 @@ $(document).on('click', '.compare-removal button', function (e) {
 
 $(document).on('submit', '#add-faqs', function (e) {
     e.preventDefault();
+
+    if ($("[name='question']").val().length <= 0) {
+        Toast.fire({
+            icon: 'error',
+            title: "The question is required"
+        });
+
+        return true;
+    }
+
+
     var formData = new FormData(this);
     formData.append(csrfName, csrfHash);
     $.ajax({
@@ -8466,6 +8542,8 @@ $(document).on('click', '.view_ticket_chat', function (e, row) {
     e.preventDefault();
     $(".ticket_msg").data('max-loaded', false);
     var ticket_id = $(this).data("id");
+  
+    
 
     var username = $(this).data("username");
     var date_created = $(this).data("date_created");
@@ -8666,4 +8744,12 @@ function getEffectiveLowStockLimit(productLowStockLimit) {
 }
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
+});
+
+$(document).ready(function () {
+    $("#mobile").on("focus mousedown keydown paste", function (e) {
+
+        e.preventDefault();
+        this.blur();
+    });
 });

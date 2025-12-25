@@ -590,7 +590,7 @@ $(document).on('click', '#wallet_refill', function () {
                 order_id: order_id,
             },
                 function (data) {
-                    let url = (data["data"]["data"]['instrumentResponse']['redirectInfo']['url']) ? data["data"]["data"]['instrumentResponse']['redirectInfo']['url'] : ""
+                    let url = (data['data']['redirectUrl']) ? data['data']['redirectUrl'] : ""
                     let message = (data['message']) ? data['message'] : ""
                     wallet_refill().done(function (result) {
                         

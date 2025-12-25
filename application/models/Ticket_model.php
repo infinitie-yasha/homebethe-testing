@@ -405,7 +405,7 @@ class Ticket_model extends CI_Model
                        data-status="' . $row['status'] . '"
                        data-ticket_type="' . $row['title'] . '"
                        data-toggle="modal"
-                       data-target="#address-modal">
+                       data-target="#address-modal-' . $row['id'] . '">
                         <i class="fa fa-edit me-2"></i>Edit Ticket
                     </a>
                 </li>';
@@ -555,7 +555,7 @@ class Ticket_model extends CI_Model
         $search_res = $this->db->select('tm.*,t.subject,u.username')->join('tickets t', 't.id=tm.ticket_id', 'left')->join('users u', 'u.id=tm.user_id', 'left');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
-             $this->db->group_Start();
+            $this->db->group_Start();
             $search_res->or_like($multipleWhere);
             $this->db->group_End();
         }

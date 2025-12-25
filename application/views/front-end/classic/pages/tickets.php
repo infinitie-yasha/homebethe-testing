@@ -47,7 +47,7 @@
 
                         <input type="hidden" class="form-control mt-2" value=<?= $_SESSION['user_id'] ?> name="user_id"
                             id='user_id'>
-                        <input type="email" class="form-control mt-2" placeholder="Email" name="email" id='email'>
+                        <input type="text" class="form-control mt-2" placeholder="Email" name="email" id='email'>
                         <input type="text" class="form-control mt-2" placeholder="Subject" name="subject" id='subject'
                             required>
                         <textarea name="description" id="description" class="form-control mt-2"
@@ -122,7 +122,7 @@
                         ?>
 
                         <!-- Ticket modal -->
-                        <div class="modal fade" id="address-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        <div class="modal fade" id="address-modal<?= "-" , $ticket['id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">

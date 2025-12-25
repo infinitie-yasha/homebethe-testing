@@ -448,7 +448,7 @@
                                     <tr>
                                         <th data-field="id" data-sortable="true">ID</th>
                                         <th data-field="name" data-sortable="false">User Name</th>
-                                        <th data-field="payment_address" data-sortable="false">payment_address</th>
+                                        <th data-field="payment_address" data-sortable="false">payment address</th>
                                         <th data-field="amount_requested" data-sortable="false">Amount</th>
                                         <th data-field="status" data-sortable="false">Status</th>
                                         <th data-field="date_created" data-sortable="false">Date</th>

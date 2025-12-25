@@ -120,7 +120,7 @@ class Tickets extends CI_Controller
         $this->form_validation->set_rules('ticket_type_id', 'Ticket Type', 'trim|required|xss_clean');
         $this->form_validation->set_rules('user_id', 'User id', 'trim|required|numeric|xss_clean');
         $this->form_validation->set_rules('subject', 'Subject', 'trim|required|xss_clean');
-        $this->form_validation->set_rules('email', 'email', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('email', 'email', 'trim|required|xss_clean|valid_email');
         $this->form_validation->set_rules('description', 'description', 'trim|required|xss_clean');
 
 

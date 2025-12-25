@@ -1172,8 +1172,10 @@ function validate_promo_code($promo_code, $user_id, $final_total)
                     if ($promo_code[0]['repeat_usage'] == 1 && ($promo_code[0]['user_promo_usage_counter'] <= $promo_code[0]['no_of_repeat_usage'])) {
                         if (intval($promo_code[0]['user_promo_usage_counter']) <= intval($promo_code[0]['no_of_repeat_usage'])) {
 
+
                             $response['error'] = false;
                             $response['message'] = 'The promo code is valid';
+
 
                             if ($promo_code[0]['discount_type'] == 'percentage') {
                                 $promo_code_discount = floatval($final_total * $promo_code[0]['discount'] / 100);
@@ -1209,6 +1211,7 @@ function validate_promo_code($promo_code, $user_id, $final_total)
                             } else {
                                 $promo_code_discount = floatval($final_total - $promo_code[0]['discount']);
                             }
+
                             if ($promo_code_discount <= $promo_code[0]['max_discount_amount']) {
                                 $total = (isset($promo_code[0]['is_cashback']) && $promo_code[0]['is_cashback'] == 0) ? floatval($final_total) - $promo_code_discount : floatval($final_total);
                             } else {
@@ -2478,7 +2481,7 @@ function validate_order_status($order_ids, $status, $table = 'order_items', $use
                 $returnable_count += 1;
             }
             if ($product_data[$i]['is_cancelable'] == 1) {
-                $cancelable_count += 1; 
+                $cancelable_count += 1;
             }
 
             /* check if the posted status is present in any of the variants */
@@ -5451,9 +5454,9 @@ function get_delivery_charge($address_id, $total = 0, $user_id = '')
 
                     if ($t->db->field_exists('delivery_charges', 'zipcodes') && $t->db->field_exists('minimum_free_delivery_order_amount', 'zipcodes')) {
                         $zipcode = fetch_details('zipcodes', ['zipcode' => $address[0]['pincode'], 'city_id' => $address[0]['city_id']], 'delivery_charges,minimum_free_delivery_order_amount');
-                     
+
                     }
-                   
+
                     if (isset($area[0]['minimum_free_delivery_order_amount']) || isset($zipcode[0]['minimum_free_delivery_order_amount'])) {
                         $min_amount = isset($area[0]['minimum_free_delivery_order_amount']) && !empty($area[0]['minimum_free_delivery_order_amount']) ? $area[0]['minimum_free_delivery_order_amount'] : $zipcode[0]['minimum_free_delivery_order_amount'];
 
@@ -7893,3 +7896,31 @@ function normalize_variant_ids($ids)
     sort($parts, SORT_NUMERIC);
     return implode(',', $parts);
 }
+
+function sanitize_store_description($input)
+{
+    if (!is_string($input)) {
+        return '';
+    }
+
+    // 1. Remove extra escaping (\\\\r\\\\n → \\r\\n → actual newline)
+    $input = stripslashes($input);
+    $input = str_replace(["\r\n", "\r", "\n"], "\n", $input);
+
+    // 2. Block HTML / script tags
+    if ($input !== strip_tags($input)) {
+        return false; // invalid: contains HTML/script
+    }
+
+    // 3. Remove special characters
+    // Allow letters, numbers, spaces, dots, commas, hyphen, apostrophe, colon, dash
+    // Preserve new lines
+    $input = preg_replace('/[^a-zA-Z0-9\s.,\'\-:]/', '', $input);
+
+    // 4. Clean excessive spaces (keep new lines)
+    $input = preg_replace("/[ \t]+/", ' ', $input);
+    $input = preg_replace("/\n{3,}/", "\n\n", $input);
+
+    return trim($input);
+}
+

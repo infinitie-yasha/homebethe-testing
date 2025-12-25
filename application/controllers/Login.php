@@ -122,6 +122,27 @@ class Login extends CI_Controller
                 exit();
             }
         } else {
+
+            $new_email = $this->input->post('email', true);
+
+            $exists = $this->db
+                ->where('email', $new_email)
+                ->where('id !=', $user_id)
+                ->count_all_results('users');
+            
+            if ($exists > 0) {
+                
+                $response['error'] = true;
+                $response['csrfName'] = $this->security->get_csrf_token_name();
+                $response['csrfHash'] = $this->security->get_csrf_hash();
+                $response['message'] = "Email already exists";
+                echo json_encode($response);
+                return false;
+                exit();
+                
+            }
+
+
             if (!empty($old) || !empty($new) || !empty($new_confirm)) {
                 if (!$this->ion_auth->change_password($identity, $this->input->post('old'), $this->input->post('new'))) {
                     // if the login was un-successful
@@ -145,7 +166,7 @@ class Login extends CI_Controller
             $images_info_error = "";
             $allowed_media_types = implode('|', allowed_media_types());
             $config = [
-                'upload_path' =>  FCPATH . USER_IMG_PATH,
+                'upload_path' => FCPATH . USER_IMG_PATH,
                 'allowed_types' => $allowed_media_types,
                 'max_size' => 8000,
             ];
@@ -193,16 +214,20 @@ class Login extends CI_Controller
             }
             if ($images_info_error != NULL) {
                 $this->response['error'] = true;
-                $this->response['message'] =  $images_info_error;
+                $this->response['message'] = $images_info_error;
                 print_r(json_encode($this->response));
                 return false;
             }
+
+            // echo "<pre>";
+            // print_r($images_new_name_arr);
+            // die;
 
             $set = [
                 'username' => $this->input->post('username'),
                 'email' => $this->input->post('email'),
                 'mobile' => $this->input->post('mobile'),
-                'image' => (isset($images_new_name_arr[0]) && !empty($images_new_name_arr[0])) ? $images_new_name_arr[0] : $_POST['user_profile_image'],
+                'image' => (isset($images_new_name_arr[0]) && !empty($images_new_name_arr[0])) ? $images_new_name_arr[0] : ($_POST['user_profile_image'] ?? ''),
             ];
             $set = escape_array($set);
             $this->db->set($set)->where($identity_column, $identity)->update($tables['login_users']);

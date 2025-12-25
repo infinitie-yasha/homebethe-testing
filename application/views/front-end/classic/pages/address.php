@@ -129,7 +129,7 @@
                                     <th data-field="mobile" data-sortable="false"><?= !empty($this->lang->line('mobile_number')) ? str_replace('\\', '', $this->lang->line('mobile_number')) : 'Mobile Number' ?></th>
                                     <th data-field="alternate_mobile" data-sortable="false" data-visible="false"><?= !empty($this->lang->line('alternate_mobile')) ? str_replace('\\', '', $this->lang->line('alternate_mobile')) : 'Alternate Mobile' ?></th>
                                     <th data-field="address" data-sortable="false"><?= !empty($this->lang->line('address')) ? str_replace('\\', '', $this->lang->line('address')) : 'Address' ?></th>
-                                    <th data-field="landmark" data-sortable="false" data-visible="false"><?= !empty($this->lang->line('landmark')) ? str_replace('\\', '', $this->lang->line('landmark')) : 'Landmark' ?></th>
+                                    <!-- <th data-field="landmark" data-sortable="false" data-visible="false"><?= !empty($this->lang->line('landmark')) ? str_replace('\\', '', $this->lang->line('landmark')) : 'Landmark' ?></th> -->
                                     <th data-field="area" data-sortable="false"><?= !empty($this->lang->line('area')) ? str_replace('\\', '', $this->lang->line('area')) : 'Area' ?></th>
                                     <th data-field="city" data-sortable="false"><?= !empty($this->lang->line('city')) ? str_replace('\\', '', $this->lang->line('city')) : 'City' ?></th>
                                     <th data-field="state" data-sortable="false"><?= !empty($this->lang->line('state')) ? str_replace('\\', '', $this->lang->line('state')) : 'State' ?></th>

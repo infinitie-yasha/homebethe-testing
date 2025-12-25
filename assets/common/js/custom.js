@@ -24,6 +24,26 @@ var currentDate = new Date();
 var currentYear = currentDate.getFullYear();
 var all_previous_attributes_values = [];
 
+$(document).ready(function () {
+    $('#order_tracking_offcanvas').on('show.bs.offcanvas', function (e) {
+
+        let button = $(e.relatedTarget);
+        let consignment_id = button.data('id');
+        let tracking_data = button.data('tracking-data');
+
+        $('.consignment_id').val(consignment_id);
+        if (tracking_data != [] && tracking_data.length > 0) {
+            $('#courier_agency').val(tracking_data[0]['courier_agency']);
+            $('#tracking_id').val(tracking_data[0]['tracking_id']);
+            $('#url').val(tracking_data[0]['url']);
+        } else {
+            $('#courier_agency').val('');
+            $('#tracking_id').val('');
+            $('#url').val('');
+        }
+    });
+});
+
 // For hugeRTE Editor
 $(document).ready(function () {
     let options = {
@@ -1494,7 +1514,7 @@ function updateVariantsWithNewAttributes(from) {
             var existingVariantData = captureExistingVariantData();
 
             // Regenerate all variants
-            create_fetched_variants_html(false, from, existingVariantData);
+            create_fetched_variants_html(true, from, existingVariantData);
 
             // After a short delay, try to restore data for matching variants
             // setTimeout(function () {
@@ -2163,6 +2183,18 @@ function create_fetched_variants_html(add_newly_created_variants = false, from, 
                 result = result.filter(arr =>
                     addedSet.has(normalizeIds(arr[0].attrValueIds))
                 );
+                // ----------------------------------------------------
+                // NO ATTRIBUTE CHANGE → ONLY UPDATE STOCK FIELDS
+                // ----------------------------------------------------
+                if (
+                    old_variants.length > 0 &&
+                    addedSet.size === 0 &&
+                    removedSet.size === 0
+                ) {
+                    updateExistingVariantStockFields();
+                    showToast('Variant stock updated successfully!', 'success');
+                    return;
+                }
             }
 
             // ----------------------------------------------------
@@ -2238,7 +2270,7 @@ function create_fetched_variants_html(add_newly_created_variants = false, from, 
                             <i class="ti ti-trash text-danger"></i>
                         </button>
                     </div>
-                    <div class="col-12" id="variant_stock_management_html">
+                    <div class="col-12 variant-stock-management" id="variant_stock_management_html">
                         <div id="${attr_name}" class="collapse show">`;
 
                 if ($('.variant_stock_status').is(':checked') &&
@@ -2291,6 +2323,67 @@ function create_fetched_variants_html(add_newly_created_variants = false, from, 
         }
     });
 }
+
+function updateExistingVariantStockFields() {
+
+    let enableStock =
+        $('.variant_stock_status').is(':checked') &&
+        $('.variant-stock-level-type').val() === 'variable_level';
+
+    $('.product-variant-selectbox').each(function () {
+
+        let container = $(this)
+            .find('.variant-stock-management .collapse');
+
+        if (!container.length) return;
+
+        // Remove existing stock fields
+        container.find('.variant-stock-fields').remove();
+
+        if (enableStock) {
+
+            // 🔹 Find price row
+            let priceRow = container
+                .find('input[name="variant_price[]"]')
+                .closest('.row');
+
+            if (priceRow.length) {
+                // ✅ Insert stock fields AFTER price row
+                priceRow.after(createVariantStockFields());
+            } else {
+                // fallback (should not happen)
+                container.append(createVariantStockFields());
+            }
+        }
+    });
+}
+
+function createVariantStockFields() {
+    return `
+        <div class="row variant-stock-fields mt-3">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">SKU <span class="text-danger">*</span>:</label>
+                <input type="text" name="variant_sku[]" class="form-control varaint-must-fill-field">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Total Stock <span class="text-danger">*</span>:</label>
+                <input type="number" min="1" name="variant_total_stock[]" class="form-control varaint-must-fill-field">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Stock Status <span class="text-danger">*</span>:</label>
+                <select name="variant_level_stock_status[]" class="form-control varaint-must-fill-field">
+                    <option value="1">In Stock</option>
+                    <option value="0">Out Of Stock</option>
+                </select>
+            </div>
+        </div>
+    `;
+}
+
+
+$(document).on('change', '.variant_stock_status, .variant-stock-level-type', function () {
+    updateExistingVariantStockFields();
+});
 /**
  * Function to create editable variants with existing data and optional newly selected attributes
  * This matches the advanced logic from admin_old for handling variant editing
@@ -2388,14 +2481,14 @@ function create_editable_variants(data, newly_selected_attr = false, add_newly_c
         console.log("b.variant_ids  :  " + b.variant_ids);
 
 
-        html += '<input type="hidden" name="variants_ids[]" value="' + b.variant_ids + '">' +
+        html += '<input type="hidden" name="variants_ids[]" value="' + b.attribute_value_ids + '">' +
             '<div class="col d-flex gap-2 justify-content-center my-auto">' +
             '<a data-bs-toggle="collapse" class="btn btn-tool text-primary btn-sm" data-bs-target="#' + attr_name + '" aria-expanded="true">' +
             '<i class="ti ti-chevron-down"></i></a>' +
             '<button type="button" class="btn btn-tool btn-sm remove_variants">' +
             '<i class="ti ti-trash text-danger"></i></button>' +
             '</div>' +
-            '<div class="col-12" id="variant_stock_management_html">' +
+            '<div class="col-12 variant-stock-management" id="variant_stock_management_html">' +
             '<div id="' + attr_name + '" class="collapse show">';
 
         // Add variant form fields with existing data
@@ -2409,15 +2502,17 @@ function create_editable_variants(data, newly_selected_attr = false, add_newly_c
                 '<label class="form-label">Special Price</label>' +
                 '<input type="number" name="variant_special_price[]" class="form-control discounted_price" min="0" step="0.01" value="' + (b.special_price || '') + '">' +
                 '</div>' +
-                '<div class="col-md-6 mb-3">' +
+                '</div>' +
+                '<div class="row mt-3 variant-stock-fields">' +
+                '<div class="col-md-4 mb-3">' +
                 '<label class="form-label">SKU <span class="text-danger">*</span></label>' +
                 '<input type="text" name="variant_sku[]" class="form-control variant-must-fill-field" value="' + (b.sku || '') + '">' +
                 '</div>' +
-                '<div class="col-md-6 mb-3">' +
+                '<div class="col-md-4 mb-3">' +
                 '<label class="form-label">Total Stock <span class="text-danger">*</span></label>' +
                 '<input type="number" min="1" name="variant_total_stock[]" class="form-control variant-must-fill-field" value="' + (b.stock || '') + '">' +
                 '</div>' +
-                '<div class="col-md-6 mb-3">' +
+                '<div class="col-md-4 mb-3">' +
                 '<label class="form-label">Stock Status <span class="text-danger">*</span></label>' +
                 '<select name="variant_level_stock_status[]" class="form-select variant-must-fill-field">' +
                 '<option value="1"' + (b.availability == '1' ? ' selected' : '') + '>In Stock</option>' +
@@ -2784,7 +2879,7 @@ function createVariantFormFields(withStockManagement) {
     var html = '';
 
     if (withStockManagement) {
-        html += '<div class="row mt-3">' +
+        html += '<div class="row">' +
             '<div class="col-md-4 mb-3">' +
             '<label class="form-label">Price <span class="text-danger">*</span>:</label>' +
             '<input type="number" name="variant_price[]" class="form-control price varaint-must-fill-field" min="0" step="0.01">' +
@@ -2793,6 +2888,8 @@ function createVariantFormFields(withStockManagement) {
             '<label class="form-label">Special Price:</label>' +
             '<input type="number" name="variant_special_price[]" class="form-control discounted_price" min="0" step="0.01">' +
             '</div>' +
+            '</div>' +
+            '<div class="row mt-3 variant-stock-fields">' +
             '<div class="col-md-4 mb-3">' +
             '<label class="form-label">SKU <span class="text-danger">*</span>:</label>' +
             '<input type="text" name="variant_sku[]" class="form-control varaint-must-fill-field">' +

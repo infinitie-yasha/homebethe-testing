@@ -633,7 +633,7 @@ class Home extends CI_Controller
 
         if (!$this->form_validation->run()) {
             $this->response['error'] = true;
-            $this->response['message'] = validation_errors();
+            $this->response['message'] = $this->form_validation->error_array();
             print_r(json_encode($this->response));
             return false;
         }

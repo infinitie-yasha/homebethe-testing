@@ -817,7 +817,7 @@
                                         <td>
                                             <a href="<?= base_url('products?brand=' . html_escape($brand_img[0]['slug'])) ?>"
                                                 class="text-decoration-none">
-                                                <img src="<?= base_url(rawurlencode($brand_img[0]['image'])) ?>" class="h-6">
+                                                <img src="<?= base_url(($brand_img[0]['image'])) ?>" class="h-6">
                                                 <?= ucfirst($product['product'][0]['brand']) ?>
                                             </a>
                                         </td>
@@ -917,7 +917,8 @@
                                 <div class="col-12">
                                     <div class="accordion mt-3" id="accordionExample">
 
-                                        <?php if ((!isset($faq['data']) && empty($faq['data'])) || $faq['data'] == []) { ?>
+
+                                        <?php if (empty($faq['data'])) { ?>
                                             <div class="col-md-12 d-flex justify-content-center h5">
                                                 <?= !empty($this->lang->line('no_faqs_found')) ? str_replace('\\', '', $this->lang->line('no_faqs_found')) : 'No FAQs Found' ?>
                                             </div>
@@ -940,8 +941,8 @@
                                                         <div id="<?= "c-" . $row['id'] ?>" class="collapse"
                                                             aria-labelledby="<?= "h-" . $row['id'] ?>"
                                                             data-parent="#accordionExample">
-                                                            <div class="card-body"><?= html_escape($row['answer']) ?></div>
-                                                            <div class="card-body">
+                                                            <div class="card-body pb-0"><?= html_escape($row['answer']) ?></div>
+                                                            <div class="card-body font-weight-bold ml-3 pt-1">
                                                                 <?= !empty($this->lang->line('answer_by')) ? str_replace('\\', '', $this->lang->line('answer_by')) : 'Answer by' ?>
                                                                 :
                                                                 <?= isset($product_data[0]['username']) && !empty($product_data[0]['username']) ? html_escape($product_data[0]['username']) : "" ?>

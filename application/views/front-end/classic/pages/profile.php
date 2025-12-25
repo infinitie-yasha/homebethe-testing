@@ -31,7 +31,7 @@
                 <form class="form-submit-event" method="POST" action="<?= base_url('login/update_user') ?>">
                     <div class="d-flex form-group justify-content-center profile_image">
                         <?php if (!empty($users->image)) { ?>
-                            <img class="avatar" src="<?= base_url(rawurlencode($users->image)) ?>" alt="<?= !empty($this->lang->line('profile_image')) ? str_replace('\\', '', $this->lang->line('profile_image')) : 'Profile Image' ?>">
+                            <img class="avatar" src="<?= base_url(($users->image)) ?>" alt="<?= !empty($this->lang->line('profile_image')) ? str_replace('\\', '', $this->lang->line('profile_image')) : 'Profile Image' ?>">
                         <?php } else { ?>
                             <img class="avatar" src="<?= base_url() . NO_USER_IMAGE ?>" alt="<?= !empty($this->lang->line('profile_image')) ? str_replace('\\', '', $this->lang->line('profile_image')) : 'Profile Image' ?>">
                         <?php } ?>
@@ -69,7 +69,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="new_confirm" class="col-sm-12 col-form-label"><?= !empty($this->lang->line('confirm_new_password')) ? str_replace('\\', '', $this->lang->line('confirm_new_password')) : 'Confirm New Password' ?></label>
-                            <input type="password" class="form-control" id="new_confirm" placeholder="T<?= !empty($this->lang->line('confirm_new_password')) ? str_replace('\\', '', $this->lang->line('confirm_new_password')) : 'Confirm New Password' ?>" name="new_confirm">
+                            <input type="password" class="form-control" id="new_confirm" placeholder="<?= !empty($this->lang->line('confirm_new_password')) ? str_replace('\\', '', $this->lang->line('confirm_new_password')) : 'Confirm New Password' ?>" name="new_confirm">
                         </div>
                     </div>
                     <button type="submit" class="button button-success btn-5 submit_btn"><?= !empty($this->lang->line('save')) ? str_replace('\\', '', $this->lang->line('save')) : 'Save' ?></button>

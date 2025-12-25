@@ -4617,23 +4617,7 @@ $(document).on('click', '.digital_order_status_update', function (e) {
 });
 
 
-$('#order_tracking_offcanvas').on('show.bs.offcanvas', function (e) {
 
-    let button = $(e.relatedTarget);
-    let consignment_id = button.data('id');
-    let tracking_data = button.data('tracking-data');
-
-    $('.consignment_id').val(consignment_id);
-    if (tracking_data != [] && tracking_data.length > 0) {
-        $('#courier_agency').val(tracking_data[0]['courier_agency']);
-        $('#tracking_id').val(tracking_data[0]['tracking_id']);
-        $('#url').val(tracking_data[0]['url']);
-    } else {
-        $('#courier_agency').val('');
-        $('#tracking_id').val('');
-        $('#url').val('');
-    }
-});
 
 // Language Management Functions
 

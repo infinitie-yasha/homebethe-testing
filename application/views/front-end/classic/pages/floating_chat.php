@@ -122,7 +122,7 @@
                         <div class="mr-3" id="chat-avtar-main">#</div>
                         <div class="media-body">
                             <div class="mt-0 mb-1 font-weight-bold text-color" id="chat_title"></div>
-                            <div class="text-small font-600-bold" id="chat_online_status"></div>
+                            <div class="text-small font-600-bold text-color" id="chat_online_status"></div>
                         </div>
                     </div>
                     <div id="chat-box-content" class="chat-bg card-body chat-scroll chat-content">
@@ -158,7 +158,7 @@
                                             <i class="fa fa-paper-plane"></i>
                                         </button>
 
-                                        <button class="btn-file btn btn-primary" onclick="showDropZone();">
+                                        <button class="btn-file btn btn-primary text-color" onclick="showDropZone();">
                                             <i class="fa fa-paperclip"></i>
                                         </button>
                                     </div>

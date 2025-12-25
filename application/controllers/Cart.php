@@ -521,6 +521,7 @@ class Cart extends CI_Controller
 
     public function place_order()
     {
+        
         if ($this->data['is_logged_in']) {
             /*
             mobile:9974692496
@@ -611,6 +612,34 @@ class Cart extends CI_Controller
                 print_r(json_encode($this->response));
                 return;
             } else {
+
+                if($_POST['payment_method'] == "COD"){
+                    $payment_method = get_settings('payment_method', true);
+                    $min_cod_amount = isset($payment_method['min_cod_amount']) ? $payment_method['min_cod_amount'] : 0;
+                    $max_cod_amount = isset($payment_method['max_cod_amount']) ? $payment_method['max_cod_amount'] : 0;
+
+                    $total = $_POST['total'];
+                    if($total > $max_cod_amount){
+                        $this->response['error'] = true;
+                        $this->response['csrfName'] = $this->security->get_csrf_token_name();
+                        $this->response['csrfHash'] = $this->security->get_csrf_hash();
+                        $this->response['message'] = "Maximum amount allowed for Cash on delivery is $max_cod_amount";
+                        $this->response['data'] = array();
+                        print_r(json_encode($this->response));
+                        return;
+                    } 
+                    if($total < $min_cod_amount){
+                        $this->response['error'] = true;
+                        $this->response['csrfName'] = $this->security->get_csrf_token_name();
+                        $this->response['csrfHash'] = $this->security->get_csrf_hash();
+                        $this->response['message'] = "Minmum amount allowed for Cash on delivery is  $min_cod_amount";
+                        $this->response['data'] = array();
+                        print_r(json_encode($this->response));
+                        return;
+                    }
+                }
+
+
 
                 $_POST['order_note'] = (isset($_POST['order_note']) && !empty($_POST['order_note'])) ? $this->input->post("order_note", true) : NULL;
 

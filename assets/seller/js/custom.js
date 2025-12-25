@@ -2557,7 +2557,7 @@ if (document.getElementById('seller_login_form')) {
 
             let mobile = $("#mobile").val().trim();
 
-            
+
             $.ajax({
                 type: "get",
                 url: base_url + "seller/auth/check_seller",
@@ -2646,6 +2646,8 @@ let seller_registration_otp_sent = false
 let seller_registration_otp_verified = false;
 $("#seller_send_otp").on('click', function (e) {
 
+    let $btn = $(this);
+
     const seller_mobile = $("#seller_mobile_otp");
     let mobile = seller_mobile.val().trim();
 
@@ -2655,10 +2657,32 @@ $("#seller_send_otp").on('click', function (e) {
     if (!/^\d{10}$/.test(mobile)) {
         return showToast("Enter valid 10 digit mobile number", "error");
     }
-    sendOtp("+91" + mobile);
 
-    $(this).html('Sending...');
-    $(this).prop("disabled", true);
+
+    $btn.html('Sending...');
+    $btn.prop("disabled", true);
+
+    $.ajax({
+        type: "get",
+        url: base_url + "seller/auth/check_seller",
+        data: { mobile: mobile, type: "register" },
+        success: function (response) {
+
+            if (response.error) {
+                $btn.html('Send OTP');
+                $btn.prop("disabled", false);
+                showToast(response.message, 'error');
+                return;
+            } else {
+                sendOtp("+91" + mobile);
+            }
+        },
+        error: function () {
+            $btn.html('Send OTP');
+            $btn.prop("disabled", false);
+            showToast("Something went wrong", "error");
+        }
+    });
 
 });
 $("#seller_verify_otp").on('click', function (e) {

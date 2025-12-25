@@ -3,6 +3,8 @@ var stripe1;
 var fatoorah_url = '';
 var currency = $('#currency').val();
 var supported_locals = $('#supported_locals').val();
+const min_cod_amount = $("#min_cod_amount").val();
+const max_cod_amount = $("#max_cod_amount").val();
 function removeCommaIfExists(value) {
     if (typeof value === 'string') {
         return value.includes(',') ? value.replace(/,/g, '') : value;
@@ -342,6 +344,11 @@ $(document).ready(function () {
             return false;
         }
         var payment_methods = $("input[name='payment_method']:checked").val();
+        if ($("#promocode_amount").html().length > 0) {
+            let new_final_total = parseInt($("#final_total").html()) +
+                parseInt($("#promocode_amount").html());
+            $("#final_total").html(new_final_total)
+        }
         if (payment_methods == "Stripe") {
             $.post(base_url + "cart/pre-payment-setup", {
                 [csrfName]: csrfHash,
@@ -618,6 +625,26 @@ $(document).ready(function () {
                 'json'
             )
         } else if (payment_methods == "COD" || payment_methods == "Direct Bank Transfer") {
+
+            if (parseFloat(final_total) > parseFloat(max_cod_amount)) {
+                Toast.fire({
+                    icon: 'error',
+                    title: `Maximum amount allowed for Cash on delivery is ${max_cod_amount}`
+                });
+                $('#place_order_btn').prop('disabled', true);
+                $('#place_order_btn').html('Place Order');
+                return true;
+            }
+            if (parseFloat(final_total) < parseFloat(min_cod_amount)) {
+                Toast.fire({
+                    icon: 'error',
+                    title: `Minmum amount allowed for Cash on delivery is ${min_cod_amount}`
+                });
+                $('#place_order_btn').prop('disabled', true);
+                $('#place_order_btn').html('Place Order');
+                return true;
+            }
+
             place_order().done(function (result) {
                 if (result.error == false) {
                     setTimeout(function () {
@@ -772,14 +799,19 @@ $(document).ready(function () {
                         title: data.message
                     });
                     var delivery_charge = $(".delivery-charge").text();
+
                     if (delivery_charge == '') {
                         delivery_charge = 0;
                     } else {
+
+
                         delivery_charge = delivery_charge.replace(',', '');
                     }
                     var is_cashback = data.data[0].is_cashback;
                     var final_total = data.data[0].final_total;
                     var final_discount = parseFloat(data.data[0].final_discount);
+
+                    console.log(delivery_charge);
 
                     final_total = parseFloat(final_total) - parseFloat(wallet_used) + parseFloat(delivery_charge);
                     $('#promocode_div').removeClass('d-none');
@@ -1015,7 +1047,7 @@ $(document).ready(function () {
                 $('.delivery_charge_without_cod').val(result.delivery_charge_without_cod)
                 $('.estimate_date').html(result.estimate_date)
                 var shipping_method = result.shipping_method
-                console.log(result);
+
 
                 var delivery_charge_with_cod = removeCommaIfExists(result.delivery_charge_with_cod);
                 var delivery_charge_without_cod = removeCommaIfExists(result.delivery_charge_without_cod);
@@ -1034,7 +1066,7 @@ $(document).ready(function () {
                         }
                     })
                 }
-                console.log(parseFloat(delivery_charge));
+
                 var final_total = parseFloat(sub_total) + parseFloat(delivery_charge);
                 $('#final_total').html(final_total);
                 $('input[type=radio][name=payment_method]').change(function () {
@@ -1187,6 +1219,7 @@ $(document).ready(function () {
             $('input[type=radio][name=payment_method]').change(function () {
                 var selectedPaymentMethod = $('input[type=radio][name=payment_method]:checked').val();
                 var delivery_charge = 0;
+                let promo_code_amount = $('#promocode_amount').html();
                 if (selectedPaymentMethod === 'COD') {
                     var delivery_charge_with_cod = result.delivery_charge_with_cod;
 
@@ -1242,10 +1275,43 @@ $(document).ready(function () {
                     wallet_used = wallet_used.replace(',', '');
                 }
 
-                var final_total = parseFloat(sub_total) + parseFloat(delivery_charge);
+                var promo_set = $('#promo_set').val()
+                var promocode_amount = ''
+                if (promo_set == 1) {
+                    promocode_amount = $('#promocode_amount').text();
+                    promocode_amount = removeCommaIfExists(promocode_amount);
+                } else {
+                    promocode_amount = 0;
+                }
+
+                var final_total = parseFloat(sub_total) + parseFloat(delivery_charge) - parseFloat(promocode_amount);
+                if (selectedPaymentMethod === 'COD') {
+
+                    if (parseFloat(final_total) > parseFloat(max_cod_amount)) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: `Maximum amount allowed for Cash on delivery is ${max_cod_amount}`
+                        });
+                        $('#place_order_btn').prop('disabled', true);
+                    }
+                    if (max_cod_amount(final_total) < parseFloat(min_cod_amount)) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: `Minmum amount allowed for Cash on delivery is ${min_cod_amount}`
+                        });
+                        $('#place_order_btn').prop('disabled', true);
+                    }
+                }
+                else {
+                    $('#place_order_btn').prop('disabled', false);
+                }
+                
                 $("#amount").val(final_total);
                 final_total = final_total.toLocaleString(undefined, { maximumFractionDigits: 2 });
+
                 $('#final_total').html(final_total);
+
+
 
 
             })

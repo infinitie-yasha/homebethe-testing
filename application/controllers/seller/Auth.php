@@ -916,6 +916,7 @@ class Auth extends CI_Controller
     {
 
         $mobile = $this->input->get('mobile', true);
+        $type = $this->input->get('type', true) ?? '';
         if (empty($mobile)) {
             return sendWebJsonResponse(true, "Mobile is required !");
         }
@@ -924,7 +925,7 @@ class Auth extends CI_Controller
         if ($user_exits) {
             $groups = [
                 "1" => "Administrator",
-                "2" => "General User",
+                "2" => "General User (Customer)",
                 "3" => "Delivery Boys",
                 "4" => "Sellers",
                 "5" => "Affiliate Users"
@@ -932,6 +933,13 @@ class Auth extends CI_Controller
 
             $user_group = $this->db->where('user_id', $user_exits['id'])->get('users_groups')->row_array();
             if (empty($user_group)) {
+            }
+
+            if ($type == 'register') {
+                if ($user_group['group_id'] == 4) {
+                    $value = $groups[$user_group['group_id']];
+                    return sendWebJsonResponse(true, "This mobile is already as $value.");
+                }
             }
 
             if ($user_group['group_id'] != 4) {
@@ -957,7 +965,13 @@ class Auth extends CI_Controller
                 return sendWebJsonResponse(true, "This Account had beed removed by admin. please contact support");
             }
         } else {
-            return sendWebJsonResponse(true, "Mobile not found pleaser register.");
+            if ($type == 'register') {
+                return sendWebJsonResponse(false, "Users can Register");
+
+            } else {
+                return sendWebJsonResponse(true, "Mobile not found pleaser register.");
+            }
+
         }
 
     }

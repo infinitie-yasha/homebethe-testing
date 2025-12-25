@@ -1,6 +1,7 @@
 <?php
 $this->load->model('category_model');
-$categories = $this->category_model->get_categories(null, 8);
+// $categories = $this->category_model->get_categories(null, 8);
+$categories = $this->category_model->get_categories(NULL, 8, '', 'row_order','ASC', 'true', '', '','', 1,'');
 $language = get_languages();
 $cookie_lang = $this->input->cookie('language', TRUE);
 if (defined('ALLOW_MODIFICATION') && ALLOW_MODIFICATION == 0) {
@@ -17,6 +18,9 @@ if (!empty($cookie_lang)) {
 $web_settings = get_settings('web_settings', true);
 $auth_settings = get_settings('authentication_settings', true);
 $settings = get_settings('system_settings', true);
+$payment_method = get_settings('payment_method', true);
+$min_cod_amount = isset($payment_method['min_cod_amount']) ? $payment_method['min_cod_amount'] : 0;
+$max_cod_amount = isset($payment_method['max_cod_amount']) ? $payment_method['max_cod_amount'] : 0;
 
 
 $doctor_brown = get_settings('doctor_brown', true);
@@ -37,6 +41,13 @@ $doctor_brown = (isset($doctor_brown) && !empty($doctor_brown)) ? $doctor_brown[
 
     <input type="hidden" id="is_cart_single_seller_enabled" name="is_cart_single_seller_enabled"
         value='<?= isset($settings['is_single_seller_order']) ? $settings['is_single_seller_order'] : '0'; ?>'>
+
+
+    <input type="hidden" id="min_cod_amount" name="min_cod_amount"
+        value='<?= $min_cod_amount ?>'>
+
+    <input type="hidden" id="max_cod_amount" name="max_cod_amount"
+        value='<?= $max_cod_amount ?>'>
 
 
     <input type="hidden" id="decimal_point" name="decimal_point"

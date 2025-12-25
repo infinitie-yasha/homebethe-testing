@@ -520,6 +520,7 @@ class Products extends CI_Controller
         $product_variant_id = $product['product'][0]['variants'][0]['id'];
         $res = get_statistics($product_variant_id);
 
+
         if (empty($product['product'])) {
             redirect(base_url('products'));
         }
@@ -558,7 +559,11 @@ class Products extends CI_Controller
         $this->data['seller_products_count'] = $this->Home_model->count_products($product['product'][0]['seller_id']);
         $this->data['user_rating_offset'] = $user_rating_limit + $user_rating_offset;
         $category_id = fetch_details('products', ['id' => $product['product'][0]['id']], 'category_id');
-        $this->data['faq'] = $this->product_model->get_product_faqs('', $product['product'][0]['id'], $user_id, '', 0, 10, 'id', 'DESC');
+        $product_faqs = $this->db->where(['product_id' => $product['product'][0]['id']])->get('product_faqs')->result_array();
+
+        $faq['data'] = !empty($product_faqs) ? $product_faqs : [];
+
+        $this->data['faq'] = $faq;
         $this->db->set('clicks', 'clicks+1', FALSE);
         $this->db->where('id', $category_id[0]['category_id']);
         $this->db->update('categories');
@@ -1354,6 +1359,7 @@ class Products extends CI_Controller
             $product_id = $this->input->post('product_id', true);
 
 
+
             if ($is_pincode) {
                 $zipcode_id = fetch_details('zipcodes', ['zipcode' => $zipcode], 'id');
                 $is_available = is_product_delivarable($type = 'zipcode', $zipcode_id[0]['id'], $product_id);
@@ -1382,14 +1388,15 @@ class Products extends CI_Controller
                         'cod' => 0,
                         'weight' => $product_varient_data[0]['weight'],
                     ];
-
                     $check_deliveribility = $this->shiprocket->check_serviceability($availibility_data);
+
                     if (isset($check_deliveribility['status_code']) && $check_deliveribility['status_code'] == 422) {
                         $this->response['error'] = true;
                         $this->response['message'] = '<b class="text-danger">Invalid Delivery Pincode "' . $zipcode . '"</b>';
                         echo json_encode($this->response);
                         return false;
                     } else {
+
                         if (isset($check_deliveribility['status']) && $check_deliveribility['status'] == 200 && !empty($check_deliveribility['data']['available_courier_companies'])) {
                             $estimate_date = $check_deliveribility['data']['available_courier_companies'][0]['etd'];
                             $_SESSION['valid_zipcode'] = $zipcode;

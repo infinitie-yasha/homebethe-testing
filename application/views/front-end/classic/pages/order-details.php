@@ -460,7 +460,7 @@
                         </div>
 
                         <div class="modal-footer py-3">
-                            <button type="button" class="btn btn-secondary btn-sm"
+                            <button type="button" class="btn btn-secondary btn-sm" data-izimodal-close
                                 data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-danger btn-sm confirmReturn" id="confirmReturn">Confirm
                                 Return</button>

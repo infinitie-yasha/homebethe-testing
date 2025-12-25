@@ -126,7 +126,7 @@
                         <div class="mr-3" id="chat-avtar-main">#</div>
                         <div class="media-body">
                             <div class="mt-0 mb-1 font-weight-bold text-color" id="chat_title"></div>
-                            <div class="text-small font-600-bold" id="chat_online_status"></div>
+                            <div class="text-small font-600- text-color" id="chat_online_status"></div>
                         </div>
 
                     </div>

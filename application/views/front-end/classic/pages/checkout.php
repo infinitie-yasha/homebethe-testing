@@ -705,7 +705,7 @@
                                                                 </div>
                                                                 <div class="column text-muted deliverycharge_currency">
                                                                     <?= $settings['currency'] . ' ' ?><span
-                                                                        class="delivery_charge_with_cod"></span>
+                                                                        class="delivery_charge_with_cod delivery-charge"></span>
                                                                     <input type="hidden" name="delivery_charge_with_cod"
                                                                         class="delivery_charge_with_cod" value="" />
 
@@ -718,7 +718,7 @@
                                                                 </div>
                                                                 <div class="text-muted deliverycharge_currency">
                                                                     <?= $settings['currency'] . ' ' ?><span
-                                                                        class="delivery_charge_without_cod"></span>
+                                                                        class="delivery_charge_without_cod delivery-charge"></span>
                                                                     <input type="hidden" name="delivery_charge_without_cod"
                                                                         class="delivery_charge_without_cod" value="" />
                                                                 </div>
@@ -758,7 +758,7 @@
                                                                 </div>
                                                                 <div class="column text-muted deliverycharge_currency">
                                                                     <?= $settings['currency'] . ' ' ?><span
-                                                                        class="delivery_charge_with_cod"></span>
+                                                                        class="delivery_charge_with_cod delivery-charge"></span>
                                                                     <input type="hidden" name="delivery_charge_with_cod"
                                                                         class="delivery_charge_with_cod" value="" />
 
@@ -771,7 +771,7 @@
                                                                 </div>
                                                                 <div class="text-muted deliverycharge_currency">
                                                                     <?= $settings['currency'] . ' ' ?><span
-                                                                        class="delivery_charge_without_cod"></span>
+                                                                        class="delivery_charge_without_cod delivery-charge"></span>
                                                                     <input type="hidden" name="delivery_charge_without_cod"
                                                                         class="delivery_charge_without_cod" value="" />
                                                                 </div>

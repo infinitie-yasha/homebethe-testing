@@ -322,6 +322,8 @@ class Sellers extends CI_Controller
 
             $this->form_validation->set_rules('payment_gateway', 'Withdrawal Payment Gateway', 'trim|required|xss_clean');
 
+           
+
             if (!isset($_POST['edit_seller'])) {
                 if (empty($_FILES['pan_image']['name'])) {
                     $this->response = [
@@ -672,6 +674,18 @@ class Sellers extends CI_Controller
             $permmissions['customer_privacy'] = (isset($_POST['customer_privacy']) && !empty($_POST['customer_privacy'])) ? 1 : 0;
             $permmissions['view_order_otp'] = (isset($_POST['view_order_otp']) && !empty($_POST['view_order_otp'])) ? 1 : 1;
             $permmissions['assign_delivery_boy'] = (isset($_POST['assign_delivery_boy']) && !empty($_POST['assign_delivery_boy'])) ? 1 : 1;
+
+            $store_description = $_POST['store_description'] ?? '';
+
+            $result = sanitize_store_description($store_description);
+
+            if ($result === false) {
+                sendWebJsonResponse(true, 'Invalid store description. Scripts or HTML are not allowed.'); 
+            }
+
+            // Safe value
+            $store_description = $result;
+
 
             if (isset($_POST['edit_seller']) && !empty($_POST['edit_seller'])) {
 
