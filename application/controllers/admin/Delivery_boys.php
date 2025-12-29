@@ -261,6 +261,34 @@ class Delivery_boys extends CI_Controller
                 }
                 if (isset($_POST['edit_delivery_boy']) && !empty($_POST['edit_delivery_boy'])) {
 
+                    $delivery_boy = $this->db->select('*')
+                        ->from('users')
+                        ->where(['id' => $_POST['edit_delivery_boy']])
+                        ->get()
+                        ->row_array();
+
+                    if (empty($delivery_boy)) {
+                        return sendWebJsonResponse(true, "Delivery boy not found!");
+                    }
+
+                    $previous_status = $delivery_boy['status'];
+                    if ($previous_status == '1') {
+                        if ($_POST['status'] != $previous_status && $_POST['status'] == '0') {
+                            $is_order_assigned = $this->db->select('oi.id')
+                                ->from('order_items oi')
+                                ->where(['oi.delivery_boy_id' => $_POST['edit_delivery_boy'], 'oi.active_status !=' => 'delivered'])
+                                ->get()
+                                ->row_array();
+
+                            if (!empty($is_order_assigned)) {
+                                return sendWebJsonResponse(true, "You cannot deactivate this delivery boy, as there are pending orders assigned to him/her.");
+                            }
+                        }
+
+
+                    }
+
+
                     if (!edit_unique($this->input->post('email', true), 'users.email.' . $this->input->post('edit_delivery_boy', true) . '') || !edit_unique($this->input->post('mobile', true), 'users.mobile.' . $this->input->post('edit_delivery_boy', true) . '')) {
                         $message = "Email or mobile already exists !";
 
@@ -285,6 +313,8 @@ class Delivery_boys extends CI_Controller
                     $_POST['driving_license'] = isset($images_new_name_arr) && !empty($images_new_name_arr) ? implode(',', (array) $images_new_name_arr) : implode(',', (array) $delivery_boy_data[0]['driving_license']);
 
                     $email_settings = get_settings('email_settings', true);
+
+
 
                     $this->Delivery_boy_model->update_delivery_boy($_POST);
                     if (!empty($_POST['edit_delivery_boy'])) {

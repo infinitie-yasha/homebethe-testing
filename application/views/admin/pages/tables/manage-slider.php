@@ -164,9 +164,9 @@
                                                     <label class="col-3 col-form-label required"
                                                         for="sliderurl_val">Link</label>
                                                     <div class="col">
-                                                        <input type="url" class="form-control" name="link"
-                                                            id="z" placeholder="https://example.com"
-                                                            pattern="https?://.+" disabled />
+                                                        <input type="url" class="form-control" name="link" id="z"
+                                                            placeholder="https://example.com" pattern="https?://.+"
+                                                            disabled />
                                                     </div>
                                                 </div>
 
@@ -305,6 +305,18 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3 row">
+                                                    <label class="col-3 col-form-label required"
+                                                        for="commission_perc">Commission
+                                                        percantage</label>
+                                                    <div class="col">
+                                                        <input type="number" name="commission_perc"
+                                                            class="form-control form-input"
+                                                            placeholder="Commission Percantage" step="0.1"
+                                                            id="commission_perc">
                                                     </div>
                                                 </div>
 

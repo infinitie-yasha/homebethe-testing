@@ -63,7 +63,8 @@
                                 data-page-list="[5, 10, 20, 50, 100, 200]" data-search="true" data-show-columns="true"
                                 data-show-refresh="true" data-trim-on-search="false" data-sort-name="id"
                                 data-sort-order="desc" data-mobile-responsive="true" data-toolbar=""
-                                data-show-export="true" data-maintain-selected="true" data-query-params="offer_queryParams">
+                                data-show-export="true" data-maintain-selected="true"
+                                data-query-params="offer_queryParams">
                                 <thead>
                                     <tr>
                                         <th data-field="id" data-sortable="true" data-align='center'>ID</th>
@@ -183,8 +184,7 @@
                                                 <div class="container-fluid row image-upload-section">
                                                     <label class="text-danger mt-3 edit_offer_upload_image_note">*Only
                                                         Choose When Update is necessary</label>
-                                                    <div
-                                                        class="col-sm-6 shadow rounded text-center grow image">
+                                                    <div class="col-sm-6 shadow rounded text-center grow image">
                                                         <div class=''>
                                                             <img class="img-fluid mb-2" id="offer_uploaded_image"
                                                                 src="<?= base_url() . NO_IMAGE ?>"
@@ -270,8 +270,7 @@
                                                             <label
                                                                 class="text-danger mt-3 edit_promo_upload_image_note">*Only
                                                                 Choose When Update is necessary</label>
-                                                            <div
-                                                                class="col-sm-6 shadow rounded text-center grow image">
+                                                            <div class="col-sm-6 shadow rounded text-center grow image">
                                                                 <div class=''>
                                                                     <img class="img-fluid mb-2"
                                                                         id="category_input_image_img"
@@ -283,6 +282,18 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3 row">
+                                                    <label class="col-3 col-form-label required"
+                                                        for="commission_perc">Commission
+                                                        percantage</label>
+                                                    <div class="col">
+                                                        <input type="number" name="commission_perc"
+                                                            class="form-control form-input"
+                                                            placeholder="Commission Percantage" step="0.1"
+                                                            id="commission_perc">
                                                     </div>
                                                 </div>
 
@@ -336,8 +347,7 @@
                                                             <label
                                                                 class="text-danger mt-3 edit_promo_upload_image_note">*Only
                                                                 Choose When Update is necessary</label>
-                                                            <div
-                                                                class="col-sm-6 shadow rounded text-center grow image">
+                                                            <div class="col-sm-6 shadow rounded text-center grow image">
                                                                 <div class=''>
                                                                     <img class="img-fluid mb-2"
                                                                         id="uploaded_og_image_here"

@@ -72,6 +72,10 @@ class Pickup_location_model extends CI_Model
                 $sort = $_POST['sort'];
             }
 
+            if($sort == 'seller_name'){
+                $sort = 'seller_id';
+            }
+
         if (isset($_GET['order']))
             $order = $_GET['order'];
         if (isset($_POST['order']))
@@ -133,6 +137,10 @@ class Pickup_location_model extends CI_Model
 
         if (isset($where) && !empty($where)) {
             $search_res->where($where);
+        }
+
+        if ($sort == 'seller_name') {
+            $sort = 'seller_id';
         }
 
         $city_search_res = $search_res->order_by($sort, $order)->limit($limit, $offset)->get($table)->result_array();

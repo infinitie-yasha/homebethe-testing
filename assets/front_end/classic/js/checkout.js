@@ -946,7 +946,7 @@ $(document).ready(function () {
                     if ((data.promo_codes).length != 0) {
                         $.each(data.promo_codes, function (i, e) {
                             html += '<label for="promo-code-' + e.id + '"><li style="cursor: pointer;" class="list-group-item d-flex justify-content-between lh-condensed mt-3">' +
-                                '<img src="' + e.image + '" style="max-width:80px;max-height:80px;"/>' +
+                                '<img src="' + e.image  + '" style="max-width:80px;max-height:80px;"/>' +
                                 '<div class="col-11 row pl-2">' +
                                 '<div class="col-6 text-dark" title="Copy promocode" id="redeem_promocode" data-value = ' + e.promo_code + '>' + e.promo_code + '</div>' +
                                 '<small class="col-12 text-muted">' + e.message + '</small>' +
@@ -1294,7 +1294,7 @@ $(document).ready(function () {
                         });
                         $('#place_order_btn').prop('disabled', true);
                     }
-                    if (max_cod_amount(final_total) < parseFloat(min_cod_amount)) {
+                    if (parseFloat(final_total) < parseFloat(min_cod_amount)) {
                         Toast.fire({
                             icon: 'error',
                             title: `Minmum amount allowed for Cash on delivery is ${min_cod_amount}`

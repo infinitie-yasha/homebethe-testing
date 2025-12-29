@@ -14,7 +14,8 @@ document.addEventListener('alpine:init', () => {
 
         // Initialize the form
         init() {
-           
+            console.log(config);
+            
             this.form = this.$el;
             this.url = config.url || this.form.action;
 

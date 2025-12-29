@@ -45,6 +45,16 @@ class My_account extends CI_Controller
             $this->data['title'] = 'Profile | ' . $this->data['web_settings']['site_title'];
             $this->data['keywords'] = $this->data['web_settings']['meta_keywords'];
             $this->data['description'] = $this->data['web_settings']['meta_description'];
+
+            $user_id = $this->ion_auth->user()->row()->id;
+            $user = $this->db->get_where('users', ['id' => $user_id])->row_array();
+            $loging_type = $user['type'];
+            // echo "<pre>";
+            // print_r($loging_type);
+            // die;
+            $this->data['loging_type'] = $loging_type;
+
+
             $this->load->view('front-end/' . THEME . '/template', $this->data);
         } else {
             redirect(base_url(), 'refresh');
@@ -212,6 +222,8 @@ class My_account extends CI_Controller
             $this->response['message'] = strip_tags(validation_errors());
             $this->response['data'] = array();
         } else {
+
+            unset($_POST['ekart_security_token']);
 
             if ($_POST['status'] == 'returned') {
                 if (!file_exists(FCPATH . RETURN_IMAGES)) {

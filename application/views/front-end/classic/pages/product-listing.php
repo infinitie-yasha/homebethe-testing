@@ -105,8 +105,8 @@
                             foreach ($brands_filter as $key => $value) {
                                 ?>
                                 <div class="brand_div form-check">
-                                    <label class="form-check-label" for="<?= $value['id'] ?>-brand" data-toggle="tooltip"
-                                        data-placement="top" title="<?= htmlspecialchars($value['name']) ?>">
+                                        <label class="form-check-label" for="<?= $value['id'] ?>-brand" data-toggle="tooltip"
+                                            data-placement="top" title="<?= htmlspecialchars($value['name']) ?>">
 
                                         <input class="brand form-check-input" type="radio" name="brandRadio"
                                             data-value="<?= $value['slug'] ?>" id="<?= $value['id'] ?>-brand" checked>

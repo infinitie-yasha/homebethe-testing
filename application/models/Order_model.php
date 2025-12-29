@@ -757,7 +757,7 @@ class Order_model extends CI_Model
             // Admin notification messages (for support email)
             $fcm_admin_subject = (!empty($custom_notification)) ? $title : 'New order placed ID #' . $last_order_id;
             $fcm_admin_msg = (!empty($custom_notification)) ? $message : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
-
+           
             // Seller notification messages
             $fcm_seller_subject = (!empty($custom_notification_seller)) ? $title_seller : 'New order placed ID #' . $last_order_id;
             $fcm_seller_msg = (!empty($custom_notification_seller)) ? $message_seller : 'New order received for  ' . $system_settings['app_name'] . ' please process it.';
@@ -3071,7 +3071,7 @@ class Order_model extends CI_Model
 
                 $operate .= '
     <li>
-        <a class="dropdown-item" href="' . base_url('admin/orders/edit_orders?edit_id=' . $row['id']) . '">
+        <a class="dropdown-item" href="' . base_url('admin/orders/edit_orders?edit_id=' . $row['order_id']) . '">
             <i class="ti ti-eye me-2 text-primary"></i> track Order
         </a>
     </li>

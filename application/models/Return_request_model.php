@@ -37,10 +37,7 @@ class Return_request_model extends CI_Model
         if (isset($_GET['order_id']))
             $order_id = $_GET['order_id'];
 
-        if (isset($_GET['search']) and $_GET['search'] != '') {
-            $search = $_GET['search'];
-            $multipleWhere = ['rr.`id`' => $search, 'oi.`order_id`' => $search, 'u.`username`' => $search, 'u.`email`' => $search, 'u.`mobile`' => $search, 'p.`name`' => $search, 'oi.`price`' => $search,];
-        }
+
 
         // Add status filter
         if (isset($status_filter) && $status_filter !== '') {
@@ -55,7 +52,9 @@ class Return_request_model extends CI_Model
         $count_res = $this->db->select(' COUNT(rr.id) as `total` ')->join('users u', 'u.id=rr.user_id')->join('products p', 'p.id=rr.product_id')->join('order_items oi', 'oi.id=rr.order_item_id');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
+            $this->db->group_Start();
             $count_res->or_where($multipleWhere);
+            $this->db->group_End();
         }
         if (isset($where) && !empty($where)) {
             $count_res->where($where);
@@ -106,14 +105,14 @@ class Return_request_model extends CI_Model
 
                 // Output <img> tags
                 foreach ($return_images as $url) {
-                   $return_image .= '<div class="d-flex justify-content-center align-items-center">
+                    $return_image .= '<div class="d-flex justify-content-center align-items-center">
     <img src="' . base_url($url) . '" alt="Return Image" class="img-responsive p-0"
          style="width:50px; height:100%; margin-right:5px; object-fit:cover;">
 </div>';
 
                 }
             } else {
-             $return_image = '
+                $return_image = '
 <div class="d-flex justify-content-center align-items-center">
     <img src="' . base_url() . NO_IMAGE . '" 
          alt="Return Image" 
@@ -193,16 +192,17 @@ class Return_request_model extends CI_Model
         );
         $item_id = $data['order_item_id'];
         $return_request_current_status = fetch_details('return_requests', ['id' => $data['return_request_id']], 'status')[0]['status'];
-    
         $firebase_project_id = get_settings('firebase_project_id');
         $service_account_file = get_settings('service_account_file');
-        $data += fetch_details('order_items', ['id' => $data['order_item_id']], 'product_variant_id,quantity,user_id,active_status');
-        $active_status = $data[0]['active_status'] ?? "";
-
-        $active_status = $data[0]['active_status'] ?? "";
-        $new_status = $data['status']; // numeric status
-
-        // Map numeric statuses to keywords
+        // Fetch order item details
+        $data += fetch_details(
+            'order_items',
+            ['id' => $data['order_item_id']],
+            'product_variant_id, quantity, user_id, active_status'
+        );
+        // New status from request (NUMERIC)
+        $new_status = (string) $data['status'];
+        // Status mapping
         $status_map = [
             '0' => 'pending',
             '1' => 'return_request_approved',
@@ -210,72 +210,48 @@ class Return_request_model extends CI_Model
             '8' => 'return_pickedup',
             '3' => 'returned'
         ];
-
-        $current_status_text = $active_status;
-        $new_status_text = isset($status_map[$new_status]) ? $status_map[$new_status] : '';
-
-        // --- Prevent invalid backward moves ---
-// If current status is Approved or Rejected, cannot go back to Pending
+        $return_request_current_status = fetch_details('return_requests', ['id' => $data['return_request_id']], 'status')[0]['status'];
+        $current_status_text = $status_map[$return_request_current_status] ?? '';
+        // Convert new status to text
+        $new_status_text = $status_map[$new_status] ?? '';
+        if (empty($new_status_text)) {
+            return [
+                'error' => true,
+                'message' => 'Invalid status selected.'
+            ];
+        }
+        // --------------------------------------------------
+        // ALLOWED STATUS FLOW (NO BACKWARD MOVEMENT)
+        // --------------------------------------------------
+        $allowed_transitions = [
+            'pending' => [
+                'return_request_approved',
+                'return_request_decline'
+            ],
+            'return_request_approved' => [
+                'return_pickedup'
+            ],
+            'return_pickedup' => [
+                'returned'
+            ],
+            'return_request_decline' => [],
+            'returned' => []
+        ];
+        // --------------------------------------------------
+        // VALIDATION
+        // --------------------------------------------------
         if (
-            in_array($current_status_text, ['return_request_approved', 'return_request_decline']) &&
-            $new_status == '0'
+            !isset($allowed_transitions[$current_status_text]) ||
+            !in_array($new_status_text, $allowed_transitions[$current_status_text])
         ) {
             return [
                 'error' => true,
-                'message' => "You cannot set status back to Pending once it's Approved or Rejected.",
+                'message' => "You cannot change status from " .
+                    ucfirst(str_replace('_', ' ', $current_status_text)) .
+                    " to " .
+                    ucfirst(str_replace('_', ' ', $new_status_text)) . "."
             ];
         }
-        if(
-            $return_request_current_status == "8" &&
-            $new_status == '0'
-        ){
-            return [
-                'error' => true,
-                'message' => "You cannot set status back to Pending once it's Picked Up.",
-            ];
-        }
-        if(
-            $return_request_current_status == "1" &&
-            $new_status == '8'
-        ){
-            return [
-                'error' => true,
-                'message' => "You cannot set status to Picked Up once it's Approved.",
-            ];
-        }
-
-        // If trying to mark Returned but not yet Picked Up
-        if (
-            $new_status == '3' && // Returned
-            $current_status_text != 'return_pickedup'
-        ) {
-            return [
-                'error' => true,
-                'message' => "Item Is Already Returned",
-            ];
-        }
-
-        // Prevent duplicate updates (already approved, rejected, or returned)
-        if ($current_status_text == "return_request_approved") {
-            return [
-                'error' => true,
-                'message' => "This Item is already Approved.",
-            ];
-        }
-        if ($current_status_text == "return_request_decline") {
-            return [
-                'error' => true,
-                'message' => "This Item is already Rejected.",
-            ];
-        }
-        if ($current_status_text == "returned") {
-            return [
-                'error' => true,
-                'message' => "This Item is already Returned.",
-            ];
-        }
-     
-
         $this->db->where('id', $data['return_request_id'])->update('return_requests', $request);
 
         if ($data['status'] == '3') {

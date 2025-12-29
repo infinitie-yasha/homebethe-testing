@@ -371,11 +371,19 @@ $(document).on('submit', '.form-submit-event', function (e) {
                 error_box.addClass("rounded p-3 alert alert-danger").removeClass('d-none alert-success');
                 error_box.show().delay(5000).fadeOut();
                 error_box.html(result['message']);
+                Toast.fire({
+                    icon: "error",
+                    title: result['message']
+                });
                 submit_btn.html(button_text);
                 submit_btn.attr('disabled', false);
             } else {
                 error_box.addClass("rounded p-3 alert alert-success").removeClass('d-none alert-danger');
                 error_box.show().delay(3000).fadeOut();
+                Toast.fire({
+                    icon: "success",
+                    title: result['message']
+                });
                 error_box.html(result['message']);
                 submit_btn.html(button_text);
                 submit_btn.attr('disabled', false);
@@ -383,7 +391,9 @@ $(document).on('submit', '.form-submit-event', function (e) {
                 if (form_id == 'login_form') {
                     cart_sync();
                 }
-                setTimeout(function () { location.reload(); }, 600);
+                setTimeout(function () {
+                    location.reload(); console.log();
+                }, 600);
             }
         }
     });
@@ -2359,8 +2369,6 @@ $(function () {
 
         $(this).parents("div").find("section").eq(index).removeClass('hide').siblings('section').addClass('hide');
 
-
-
         if ($(this).index() === 0) {
 
             $("#quick-view .iziModal-content .icon-close").css('background', '#ddd');
@@ -2698,7 +2706,6 @@ function updateCartItem(cart, variantId, newQty, newPrice) {
     });
 }
 
-
 $(document).ready(function () {
 
     $('.kv-fa').rating({
@@ -2780,14 +2787,15 @@ $(document).ready(function () {
 
         }
 
-        // console.log(max);
-        // if (qty > max) {
-        //     Toast.fire({
-        //         icon: 'error',
-        //         title: `Oops! Please set maximum ${max} quantity for product`
-        //     });
-        //     return;
-        // }
+        console.log(`qty = ${qty}, max = ${max}`);
+        if (qty > max) {
+            Toast.fire({
+                icon: 'error',
+                title: `Maximum ${max} quantity for product`
+            });
+            $(this).val(max);
+            return;
+        }
 
         if (qty % step == 0) {
 
@@ -5151,7 +5159,9 @@ $(document).on('click', '.add_to_cart', function (e) {
 
     e.preventDefault();
 
-    var qty = $('[name="qty"]').val();
+    var qty = $('[name="qty"]').val()
+        ? $('[name="qty"]').val()
+        : ($(this).data('min') ?? 1);
 
     $('#quick-view').data('data-product-id', $(this).data('productId'));
 
@@ -5169,7 +5179,7 @@ $(document).on('click', '.add_to_cart', function (e) {
 
     var description = $(this).attr('data-product-description');
 
-    var min = $(this).attr('data-min');
+    var min = $(this).attr('data-min') ?? 1;
 
     var max = $(this).attr('data-max');
 
@@ -5182,6 +5192,8 @@ $(document).on('click', '.add_to_cart', function (e) {
     var btn_html = $(this).html();
 
     var izi_modal = $(this).attr('data-izimodal-open');
+
+    let product_low_stock_limit = $(this).data('product-low-stock-limit') ?? 0;
 
     let selectedAttributesNames = [];
 
@@ -5200,9 +5212,17 @@ $(document).on('click', '.add_to_cart', function (e) {
 
     }
 
+    if (parseFloat(qty) > parseFloat(max)) { 
+        Toast.fire({
+            icon: 'error',
+            title: "You can add maximum " + max + " quantity!"
+        });
+        return;
+    }
 
 
-    var cart_item = { "product_variant_id": product_variant_id.trim(), "name": title, "short_description": description, "stock": total_stock, "qty": min, "image": image, "price": price.trim(), "min": min, "step": step, "max": max, 'attribute_value_names': selectedAttributesNames, 'product_seller_id': product_seller_id };
+
+    var cart_item = { "product_variant_id": product_variant_id.trim(), "name": title, "short_description": description, "stock": total_stock, "qty": qty, "image": image, "price": price.trim(), "min": min, "step": step, "max": max, 'attribute_value_names': selectedAttributesNames, 'product_seller_id': product_seller_id };
 
     if (parseFloat(cart_item.stock) <= getEffectiveLowStockLimit($(this).data('product-low-stock-limit'))) {
         Toast.fire({
@@ -5245,9 +5265,9 @@ $(document).on('click', '.add_to_cart', function (e) {
                         return;
                     }
                 }
+                
                 // check if prodict_variant is already presenet in cart or not;
                 const cartItem = cart.find(item => item.product_variant_id === product_variant_id);
-                console.log(cartItem);
 
                 if (cartItem) {
                     let update_qty = Number(cartItem.qty) + Number(qty);
@@ -5421,11 +5441,10 @@ function display_cart(cart) {
 
             const price = item?.special_price ?? item?.price ?? 0;
 
-
-
             const min = item?.min ?? item?.minimum_order_quantity ?? 0;
             const step = item?.step ?? item?.quantity_step_size ?? 0;
             const stock = item?.stock ?? 0;
+            const max = item?.max ?? item?.maximum_order_quantity ?? 0;
 
             html += '<div class="row">' +
                 '<div class="cart-product product-sm col-md-12">' +
@@ -5440,7 +5459,7 @@ function display_cart(cart) {
                 '<div class="product-pricing d-flex py-2 px-1 w-100">' +
                 '<div class="product-price align-self-center">' + currency + ' ' + price + '</div>' +
                 '<div class="product-sm-quantity px-1">' +
-                '<input type="number" class="form-input" value="' + item.qty + '" data-stock="' + stock + '"  data-id="' + item.product_variant_id + '" data-price="' + price + '"min="' + min + '"  step="' + step + '" max="' + 1 + ' ">' +
+                '<input type="number" class="form-input" value="' + item.qty + '" data-stock="' + stock + '"  data-id="' + item.product_variant_id + '" data-price="' + price + '"min="' + min + '"  step="' + step + '" max="' + max + ' ">' +
                 '</div>' +
                 '<div class="product-sm-removal align-self-center">' +
                 '<button class="remove-product button button-danger" data-id="' + item.product_variant_id + '">' +
@@ -5485,42 +5504,32 @@ function cart_sync() {
     $.ajax({
 
         type: 'POST',
-
         url: base_url + 'cart/cart_sync',
-
         data: {
-
             [csrfName]: csrfHash,
-
             data: cart,
-
             'is_saved_for_later': false,
-
         },
-
         dataType: 'json',
-
         success: function (result) {
-
             csrfName = result.csrfName;
-
             csrfHash = result.csrfHash;
-
             if (result.error == false) {
-
                 Toast.fire({
-
                     icon: 'success',
-
                     title: result.message
-
+                });
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: result.message
                 });
 
-                localStorage.removeItem("cart");
-
-                return true;
-
             }
+            console.log("remove cart form local storage ::::::::::::::::::::::::::");
+
+            localStorage.removeItem("cart");
+            return true;
 
         }
 
@@ -5920,13 +5929,16 @@ $(document).on('click', '.confirmReturn', function (e) {
 
 
     if (!selectedReason) {
-        alert("Please select a return reason.");
+        Toast.fire({
+            icon: "error",
+            title: "Please select a return reason."
+        })
         return;
     }
 
     let formData = new FormData();
     formData.append("order_item_id", itemId);
-    formData.append("return_reason", selectedReason);
+    formData.append("return_reason", selectedReason ?? '');
     formData.append("status", status);
     if (selectedReason === "other") {
         formData.append("other_reason", otherReason);
@@ -8542,8 +8554,8 @@ $(document).on('click', '.view_ticket_chat', function (e, row) {
     e.preventDefault();
     $(".ticket_msg").data('max-loaded', false);
     var ticket_id = $(this).data("id");
-  
-    
+
+
 
     var username = $(this).data("username");
     var date_created = $(this).data("date_created");
@@ -8747,9 +8759,23 @@ $(function () {
 });
 
 $(document).ready(function () {
-    $("#mobile").on("focus mousedown keydown paste", function (e) {
 
-        e.preventDefault();
-        this.blur();
-    });
+    if ($('#login_type').length > 0) {
+        let login_type = $('#login_type').val();
+
+        if (login_type == 'phone') {
+            $("#mobile").on("focus mousedown keydown paste", function (e) {
+                e.preventDefault();
+                this.blur();
+            });
+        }
+
+        if (login_type == 'google' || login_type == 'facebook' || login_type == 'apple') {
+            $("#email").on("focus mousedown keydown paste", function (e) {
+                e.preventDefault();
+                this.blur();
+            });
+        }
+    }
+
 });

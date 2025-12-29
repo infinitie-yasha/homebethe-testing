@@ -70,8 +70,9 @@
                                         <th data-field="mobile" data-sortable="true">Mobile No</th>
                                         <th data-field="address" data-sortable="false" data-visible='false'>Address</th>
                                         <th data-field="bonus_type" data-sortable="false">Bonus Type</th>
-                                        <th data-field="bonus" data-sortable="false">Bonus(<?= $currency ?>)</th>
-                                        <th data-field="bonus_amount" data-visible="false" data-sortable="false">Bonus(<?= $currency ?>)</th>
+                                        <th data-field="bonus" data-sortable="false">Bonus</th>
+                                        <!-- <th data-field="bonus_amount" data-visible="false" data-sortable="false">
+                                            Bonus Amount(<?= $currency ?>)</th> -->
                                         <th data-field="balance" data-sortable="true">Balance(<?= $currency ?>)</th>
                                         <th data-field="status" data-sortable="true">Status</th>
                                         <th data-field="date" data-sortable="true" data-visible='false'>Date</th>
@@ -94,7 +95,8 @@
                                             offcanvasId: 'addDeliveryBoy',
                                             isLoading: true,
                                             loaderText: 'Saving...',
-                                        })" method="POST" class="form-horizontal" id="add_delivery_boy_form">
+                                          
+                                        })"method="POST" class="form-horizontal" id="add_delivery_boy_form">
                                 <div class="offcanvas-body">
                                     <div>
                                         <div class="card-body">
@@ -528,7 +530,8 @@
                                             url: base_url + 'admin/area/add_city',
                                             modalId: 'AddCityModal',
                                             loaderText: 'Saving...',
-                                            switchModal: 'AddZipcodeModal'
+                                            switchModal: 'AddZipcodeModal',
+                                           
                                         })" method="POST" class="form-horizontal" id="add_city_form">
 
                                     <div class="modal-body">

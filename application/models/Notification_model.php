@@ -62,92 +62,119 @@ class Notification_model extends CI_Model
     }
     public function get_notifications_data($offset = 0, $limit = 10, $sort = 'read_by', $order = 'DESC')
     {
+        $multipleWhere = [];
+        $where = [];
 
-        $multipleWhere = '';
-        if (isset($_GET['offset']))
-            $offset = $_GET['offset'];
-        if (isset($_GET['limit']))
-            $limit = $_GET['limit'];
+        // Pagination
+        if (isset($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+        }
+        if (isset($_GET['limit'])) {
+            $limit = (int) $_GET['limit'];
+        }
 
-        if (isset($_GET['sort']))
-            if ($_GET['sort'] == 'read_by') {
-                $sort = "read_by";
-            } else {
-                $sort = $_GET['sort'];
-            }
-        if (isset($_GET['order']))
+        // Sorting
+        if (isset($_GET['sort'])) {
+            $sort = $_GET['sort'] === 'read_by' ? 'read_by' : $_GET['sort'];
+        }
+        if (isset($_GET['order'])) {
             $order = $_GET['order'];
+        }
 
-        if (isset($_GET['search']) and $_GET['search'] != '') {
+        // Search
+        if (isset($_GET['search']) && $_GET['search'] !== '') {
             $search = $_GET['search'];
-            $multipleWhere = ['id' => $search, 'title' => $search, 'message' => $search];
+            $multipleWhere = [
+                'id' => $search,
+                'title' => $search,
+                'message' => $search
+            ];
         }
 
-        if (isset($_GET['message_type']) && ($_GET['message_type'] != '')) {
-            $where = ('read_by =' . $_GET['message_type']);
+        // Message type filter (Read / Unread)
+        if (isset($_GET['message_type']) && $_GET['message_type'] !== '') {
+            $where['read_by'] = $_GET['message_type'];
         }
 
-        $count_res = $this->db->select(' COUNT(id) as `total` ');
+        /* ======================
+           COUNT QUERY
+        ======================= */
+        $count_res = $this->db->select('COUNT(id) as total')
+            ->from('system_notification');
 
-        if (isset($multipleWhere) && !empty($multipleWhere)) {
-            $count_res->or_like($multipleWhere);
+        if (!empty($multipleWhere)) {
+            $count_res->group_start()
+                ->or_like($multipleWhere)
+                ->group_end();
         }
-        if (isset($where) && !empty($where)) {
+
+        if (!empty($where)) {
             $count_res->where($where);
         }
-        $city_count = $count_res->get('system_notification')->result_array();
 
-        foreach ($city_count as $row) {
-            $total = $row['total'];
+        $total = $count_res->get()->row_array()['total'];
+
+        if ($offset >= $total) {
+            $offset = 0;
         }
 
-        $search_res = $this->db->select(' * ');
-        if (isset($multipleWhere) && !empty($multipleWhere)) {
-            $this->db->group_Start();
-            $search_res->or_like($multipleWhere);
-            $this->db->group_End();
+        /* ======================
+           DATA QUERY
+        ======================= */
+        $search_res = $this->db->select('*')
+            ->from('system_notification');
+
+        if (!empty($multipleWhere)) {
+            $search_res->group_start()
+                ->or_like($multipleWhere)
+                ->group_end();
         }
-        if (isset($where) && !empty($where)) {
+
+        if (!empty($where)) {
             $search_res->where($where);
         }
 
-        $city_search_res = $search_res->order_by($sort, $order)->limit($limit, $offset)->get('system_notification')->result_array();
+        $city_search_res = $search_res
+            ->order_by($sort, $order)
+            ->limit($limit, $offset)
+            ->get()
+            ->result_array();
 
-        $bulkData = array();
-        $bulkData['total'] = $total;
-        $rows = array();
-        $tempRow = array();
+        /* ======================
+           RESPONSE BUILD
+        ======================= */
+        $rows = [];
         foreach ($city_search_res as $row) {
-            $row = output_escaping($row);
-            // Create dropdown menu for operate column
-            $operate = '
-            <div class="dropdown">
-                <button class="btn btn-secondary btn-sm bg-secondary-lt" type="button" 
-                        data-bs-toggle="dropdown" aria-expanded="false" title="Actions">
-                    <i class="ti ti-dots-vertical"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu">';
 
-            // View action based on type
-            if (isset($row['type']) && $row['type'] == 'return_request') {
-                $operate .= '<li>
-                    <a class="dropdown-item" href="' . base_url('admin/return-request') . '?edit_id=' . $row['type_id'] . '&noti_id=' . $row['id'] . '">
-                        <i class="ti ti-eye me-2"></i>View Return Request
-                    </a>
-                </li>';
+            $row = output_escaping($row);
+
+            $operate = '
+        <div class="dropdown">
+            <button class="btn btn-secondary btn-sm bg-secondary-lt" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="ti ti-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu">';
+
+            if (isset($row['type']) && $row['type'] === 'return_request') {
+                $operate .= '
+            <li>
+                <a class="dropdown-item" href="' . base_url('admin/return-request') . '?edit_id=' . $row['type_id'] . '&noti_id=' . $row['id'] . '">
+                    <i class="ti ti-eye me-2"></i>View Return Request
+                </a>
+            </li>';
             } else {
-                $operate .= '<li>
-                    <a class="dropdown-item" href="' . base_url('admin/orders/edit_orders') . '?edit_id=' . $row['type_id'] . '&noti_id=' . $row['id'] . '">
-                        <i class="ti ti-eye me-2"></i>View Order
-                    </a>
-                </li>';
+                $operate .= '
+            <li>
+                <a class="dropdown-item" href="' . base_url('admin/orders/edit_orders') . '?edit_id=' . $row['type_id'] . '&noti_id=' . $row['id'] . '">
+                    <i class="ti ti-eye me-2"></i>View Order
+                </a>
+            </li>';
             }
 
-            // Divider
-            $operate .= '<li><hr class="dropdown-divider"></li>';
-
-            // Delete Notification
-            $operate .= '<li>
+            $operate .= '
+            <li><hr class="dropdown-divider"></li>
+            <li>
                 <a class="dropdown-item text-danger" href="javascript:void(0)"
                    x-data="ajaxDelete({
                        url: base_url + \'admin/Notification_settings/delete_system_notification\',
@@ -159,24 +186,27 @@ class Notification_model extends CI_Model
                    @click="deleteItem">
                     <i class="ti ti-trash me-2"></i>Delete
                 </a>
-            </li>';
+            </li>
+        </ul>
+        </div>';
 
-            $operate .= '
-                </ul>
-            </div>';
-
-
-            $tempRow['id'] = $row['id'];
-            $tempRow['title'] = $row['title'];
-            $tempRow['message'] = $row['message'];
-            $tempRow['type'] = str_replace('_', ' ', $row['type']);
-            $tempRow['type_id'] = $row['type_id'];
-            $tempRow['read_by'] = ($row['read_by'] == 1) ? '<label class="badge badge-primary bg-primary-lt">Read</label>' : '<label class="badge badge-danger bg-danger-lt">Un-Read</label>';
-            $tempRow['operate'] = $operate;
-            $rows[] = $tempRow;
+            $rows[] = [
+                'id' => $row['id'],
+                'title' => $row['title'],
+                'message' => $row['message'],
+                'type' => str_replace('_', ' ', $row['type']),
+                'type_id' => $row['type_id'],
+                'read_by' => ($row['read_by'] == 1)
+                    ? '<label class="badge badge-primary bg-primary-lt">Read</label>'
+                    : '<label class="badge badge-danger bg-danger-lt">Un-Read</label>',
+                'operate' => $operate
+            ];
         }
-        $bulkData['rows'] = $rows;
-        print_r(json_encode($bulkData));
+
+        echo json_encode([
+            'total' => $total,
+            'rows' => $rows
+        ]);
     }
     public function get_notification_list($offset = 0, $limit = 10, $sort = 'id', $order = 'DESC')
     {
@@ -268,7 +298,7 @@ class Notification_model extends CI_Model
                 $json_array = $row['users_id'];
 
                 // Decode the JSON array to a PHP array
-                $users = json_decode($json_array, true);
+                $users = (array) json_decode($json_array, true);
                 foreach ($users as $user_id) {
                     $username = fetch_details('users', ['id' => $user_id], 'username');
                     if (!empty($username)) {

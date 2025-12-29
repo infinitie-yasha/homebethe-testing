@@ -2441,6 +2441,10 @@ $("#seller-login-toggle-type").on('change', function () {
 $("#btn-send-otp").on("click", function () {
 
     let mobile = $("#mobile").val().trim();
+    const countryData = iti.getSelectedCountryData();
+    const countryCode = countryData.dialCode; // 91
+    console.log(countryCode);
+
     let $btn = $(this); // ✅ store reference
 
     if (!/^\d{10}$/.test(mobile)) {
@@ -2463,7 +2467,7 @@ $("#btn-send-otp").on("click", function () {
                 showToast(response.message, 'error');
                 return;
             } else {
-                sendOtp("+91" + mobile);
+                sendOtp($("#seller_mobile_otp").intlTelInput("getNumber"));
             }
         },
         error: function () {
@@ -2513,13 +2517,40 @@ function sendOtp(phone) {
             $("#btn-send-otp").prop("disabled", false);
         });
 }
+let iti;
+$(document).ready(function () {
+    const input = $("#seller_mobile_otp");
+    if (!input) return;
 
-
+    iti = $("#seller_mobile_otp")   .intlTelInput({
+        allowExtensions: true,
+        formatOnDisplay: true,
+        autoFormat: true,
+        autoHideDialCode: true,
+        autoPlaceholder: true,
+        defaultCountry: "in",
+        ipinfoToken: "yolo",
+        nationalMode: false,
+        numberType: "MOBILE",
+        preferredCountries: ["in", "ae", "qa", "om", "bh", "kw", "ma"],
+        preventInvalidNumbers: true,
+        separateDialCode: true,
+        geoIpLookup: function (callback) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "";
+                callback(countryCode);
+            });
+        },
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/utils.js"
+    });
+});
 
 if (document.getElementById('seller_login_form')) {
 
     $("#seller_login_form").on('submit', function (e) {
         e.preventDefault();
+
+       
 
 
 
@@ -2650,6 +2681,7 @@ $("#seller_send_otp").on('click', function (e) {
 
     const seller_mobile = $("#seller_mobile_otp");
     let mobile = seller_mobile.val().trim();
+   
 
     if (mobile.length <= 0) {
         return showToast("Enter mobile number", "error");
@@ -2674,7 +2706,7 @@ $("#seller_send_otp").on('click', function (e) {
                 showToast(response.message, 'error');
                 return;
             } else {
-                sendOtp("+91" + mobile);
+                sendOtp($("#seller_mobile_otp").intlTelInput("getNumber"));
             }
         },
         error: function () {

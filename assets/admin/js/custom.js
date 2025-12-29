@@ -315,7 +315,7 @@ function queryParams(p) {
 
 function ticket_queryParams(p) {
     return {
-        ticket_type_filter: $('#ticket_type_filter').val(),
+        user_type_filter: $('#user_type_filter').val(),
         limit: p.limit,
         sort: p.sort,
         order: p.order,
@@ -373,6 +373,7 @@ function return_request_queryParams(p) {
 function ticket_type_queryParams(p) {
     return {
         ticket_type_filter: $('#ticket_type_filter').val(),
+        user_type_filter: $('#user_type_filter').val(),
         limit: p.limit,
         sort: p.sort,
         order: p.order,
@@ -1104,6 +1105,11 @@ $(document).on('change', '#ticket_type_filter', function () {
     $('#ticket_table').bootstrapTable('refresh');
 });
 
+$(document).on('change', '#user_type_filter', function () {
+    $('#ticket_type_table').bootstrapTable('refresh');
+    $('#ticket_table').bootstrapTable('refresh');
+});
+
 
 $(document).on('change', '#categorySelect, #seller_filter', function () {
     $('#product_stock_table').bootstrapTable('refresh');
@@ -1461,7 +1467,7 @@ $("#promo_code_table").on("click-cell.bs.table", function (field, value, row, $e
     $('#view_minimum_order_amount').text($el.minimum_order_amount || '-');
     $('#view_discount').text($el.discount || '-');
     $('#view_image').attr('src', $el.image_main_url || base_url + 'assets/no-image.png');
-    
+
 
     // Discount Type with badge 
     if ($el.discount_type_main === 'percentage') {
@@ -1834,7 +1840,7 @@ function resetfilters() {
     const categorySelect = document.getElementById('categorySelect');
     if (categorySelect && categorySelect.tomselect) {
         categorySelect.tomselect.clear();  // remove selected option
-        $('#categorySelect').trigger('change'); // refresh logic if needed
+        $('#categorySelect').val('').trigger('change'); // refresh logic if needed
     }
 
     const sellerSelect = document.getElementById('seller_filter');
@@ -1881,6 +1887,28 @@ function resetfilters() {
     if (typeof showToast === 'function') {
         showToast('All filters cleared!', 'info');
     }
+
+
+
+    if (categorySelect) {
+        categorySelect.tomselect.clear();        // clears selected value
+        categorySelect.tomselect.clearOptions(); // optional: clear loaded options
+    }
+
+
+    if (sellerSelect && sellerSelect.tomselect) {
+        sellerSelect.tomselect.clear();
+        sellerSelect.tomselect.clearOptions();
+    }
+
+
+    if (brandSelect && brandSelect.tomselect) {
+        brandSelect.tomselect.clear();
+        brandSelect.tomselect.clearOptions();
+    }
+
+
+
 }
 
 // Offers all functions
@@ -2302,7 +2330,7 @@ $("#delivery_boy_data").on("click-cell.bs.table", function (field, value, row, $
     var fund_transfer_balance = $el.balance_main;
     var fund_transfer_balance = fund_transfer_balance.replace(',', '');
 
-    console.log($el);
+    // console.log($el);
 
 
 
@@ -3351,7 +3379,10 @@ $('#category_table').on('click-cell.bs.table', function (field, value, row, $el)
     $('#seo_page_title').val($el.seo_page_title);
     $('#seo_meta_description').val($el.seo_meta_description);
     $('#seo_meta_keywords').val($el.seo_meta_keywords);
-    $('#uploaded_og_image_here').attr('src', base_url + $el.seo_og_image);
+    console.log($el.seo_og_image);
+    if ($el.seo_og_image != null && $el.seo_og_image != '') {
+        $('#uploaded_og_image_here').attr('src', base_url + $el.seo_og_image);
+    }
 
     $('#commission_perc').val($el.commission_perc);
 
@@ -3436,7 +3467,9 @@ document.addEventListener('alpine:init', () => {
 
         init() {
             // Initialize TomSelect after the offcanvas is shown
+            console.log(this);
             const offcanvas = document.getElementById(this.offcanvasId);
+
             if (offcanvas) {
                 offcanvas.addEventListener('shown.bs.offcanvas', () => {
                     this.preventSelfSelection();
@@ -4811,7 +4844,15 @@ $(document).on('click', '.edit_stock_btn', function (e) {
         }
     });
 });
-
+$("#image_checkbox").on('click', function () {
+    if (this.checked) {
+        $(this).prop("checked", true);
+        $('.include_image').removeClass('d-none');
+    } else {
+        $(this).prop("checked", false);
+        $('.include_image').addClass('d-none');
+    }
+});
 // Handle form submission
 $('#stock_adjustment_form').on('submit', function (e) {
     e.preventDefault();
@@ -7324,18 +7365,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const hiddenInput = document.getElementById("product_rejection_reason");
 
 
+    if (saveBtn) {
+        saveBtn.addEventListener("click", function () {
+            // Copy textarea value to hidden input
+            hiddenInput.value = reasonTextarea.value.trim();
 
-    saveBtn.addEventListener("click", function () {
-        // Copy textarea value to hidden input
-        hiddenInput.value = reasonTextarea.value.trim();
+            console.log({
+                'reasonTextarea': reasonTextarea.value,
+                'hiddenInput': hiddenInput.value
+            });
 
-        console.log({
-            'reasonTextarea': reasonTextarea.value,
-            'hiddenInput': hiddenInput.value
+            // Modal will automatically close because of data-bs-dismiss="modal"
         });
+    }
 
-        // Modal will automatically close because of data-bs-dismiss="modal"
-    });
 });
 
 
@@ -7346,6 +7389,33 @@ $(document).ready(function () {
 
         $("#categorySelect").on('change', function (e) {
             let cat_id = e.target.value;
+
+            if (cat_id.length > 0) {
+                let formData = new FormData();
+                formData.append('cat_id', cat_id);
+                $.ajax({
+                    type: "POST",
+                    url: base_url + "admin/category/get_category_detail",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (!response.error) {
+                            const commissionPerc = response?.category?.commission_perc || '';
+                            $('#commission_perc').val(commissionPerc);
+                            $('#commission_perc').prop('readonly', true);
+                        }
+                    }
+                });
+            } else {
+                $('#commission_perc').prop('readonly', false);
+            }
+
+
+        });
+        $("#CategoryParentSelect").on('change', function (e) {
+            let cat_id = e.target.value;
+            console.log(cat_id);
 
             if (cat_id.length > 0) {
                 let formData = new FormData();
@@ -7455,7 +7525,6 @@ $("#verify_bank_ifsc").on('click', function (e) {
         success: function (data) {
             $("#bank_name").val(data.BANK);
             showToast("IFSC code verified", "success");
-            bank_ifsc_is_verified = true;
 
         },
         error: function () {
@@ -7478,21 +7547,21 @@ if (document.getElementById('pan_image')) {
     document.getElementById('pan_image').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (!file) return;
-    
+
         const preview = document.getElementById('panPreview');
         const lightboxLink = document.querySelector('.pan-lightbox');
-    
+
         const reader = new FileReader();
         reader.onload = function (event) {
             preview.src = event.target.result;
             preview.style.display = 'block';
-    
+
             // Update lightbox href
             lightboxLink.href = event.target.result;
         };
         reader.readAsDataURL(file);
     });
- }
+}
 
 
 $("#pan_number").on("input", function () {
@@ -7579,4 +7648,8 @@ $("#tax_number").on("input", function () {
         }
     }
     $(this).val(formatted);
+});
+
+document.addEventListener('ajax-form-success', e => {
+    console.log('EVENT FIRED:', e.detail.form.id, e.detail.response);
 });

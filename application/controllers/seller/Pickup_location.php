@@ -48,6 +48,7 @@ class Pickup_location extends CI_Controller
             $this->form_validation->set_rules('longitude', ' Longitude ', 'trim|numeric|xss_clean');
 
 
+
             if (!$this->form_validation->run()) {
                 sendWebJsonResponse(true, strip_tags(validation_errors()));
 
@@ -76,7 +77,25 @@ class Pickup_location extends CI_Controller
                 $error = (isset($result) && !empty($result) && $result['error'] == '1') ? true : false;
                 $message = (isset($_POST['edit_pickup_location'])) ? 'Update Pickup Location' : 'Add Pickup Location';
                 $message1 = (isset($result['message']) && !empty($result['message'])) ? $result['message'] : $message;
-                sendWebJsonResponse($error, $message1);
+                $decoded = json_decode($message1, true);
+
+                $flatMessages = [];
+
+                if (is_array($decoded)) {
+                    foreach ($decoded as $item) {
+                        if (is_array($item)) {
+                            foreach ($item as $msg) {
+                                $flatMessages[] = $msg;
+                            }
+                        }
+                    }
+                }
+
+                // Final readable message
+                $finalMessage = implode(' ', $flatMessages);
+
+
+                sendWebJsonResponse($error, $finalMessage);
             }
         } else {
             redirect('seller/login', 'refresh');

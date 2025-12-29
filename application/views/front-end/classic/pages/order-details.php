@@ -156,14 +156,16 @@
                                                 :
                                                 <a href="<?= $item['url'] ?>"
                                                     title="<?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?>">
-                                                   <?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?> </a>
+                                                    <?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?>
+                                                </a>
                                             </p>
                                         <?php } ?>
                                         <?php if (isset($item['shiprocket_order_tracking_url']) && !empty($item['shiprocket_order_tracking_url'])) { ?>
                                             <p class="text-muted mb-0">
                                                 <?= !empty($this->lang->line('shiprocket_order_tracking_url')) ? str_replace('\\', '', $this->lang->line('shiprocket_order_tracking_url')) : 'Shiprocket Order Tracking Url' ?>
                                                 :
-                                                <a class="btn btn-outline-info" target="_blank" href="<?= $item['shiprocket_order_tracking_url'] ?>"
+                                                <a class="btn btn-outline-info" target="_blank"
+                                                    href="<?= $item['shiprocket_order_tracking_url'] ?>"
                                                     title="<?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?>">
                                                     <?= !empty($this->lang->line('click_here_to_trace_the_order')) ? str_replace('\\', '', $this->lang->line('click_here_to_trace_the_order')) : 'click here to trace the order' ?></a>
                                             </p>
@@ -181,8 +183,11 @@
                                     $cancellable_index = array_search($cancelable_till, $status);
                                     $active_index = array_search($active_status, $status);
                                     if (!$item['is_already_cancelled'] && $item['product_is_cancelable'] && $active_index <= $cancellable_index && $item['type'] != 'digital_product') { ?>
+                                     <?php if (($item['active_status'] != 'return_request_pending') && ($item['active_status'] != 'return_request_approved') && ($item['active_status'] != 'return_request_decline')  && ( $item['active_status'] != 'cancelled')) { ?>
                                         <button class="btn btn-danger btn-xs update-order-item" data-status="cancelled"
                                             data-item-id="<?= $item['id'] ?>"><?= !empty($this->lang->line('cancel')) ? str_replace('\\', '', $this->lang->line('cancel')) : 'Cancel' ?></button>
+                                     <?php } ?>
+
                                     <?php } ?>
                                     <?php
                                     $order_date = $order['order_items'][0]['status'][3][1];
@@ -193,18 +198,20 @@
                                         $date = date('Y-m-d', $timestemp);
                                         $today = date('Y-m-d');
                                         $return_till = date('Y-m-d', strtotime($order_date . ' + ' . $settings['max_product_return_days'] . ' days'));
-                                        
+
                                         if ($today < $return_till && $item['type'] != 'digital_product' && $item['is_returnable'] == 1) { ?>
 
-                                            <div class="col my-auto p-0">
-                                                <a class="update-order-item btn btn-xs btn-danger text-white mt-3 m-0"
-                                                    data-status="returned" data-item-id="<?= $item['id'] ?>"
-                                                    data-izimodal-open=".returnModal" href="#">
-                                                    <?= !empty($this->lang->line('return')) ? str_replace('\\', '', $this->lang->line('return')) : 'Return' ?>
-                                                </a>
+                                            <?php if (($item['active_status'] != 'return_request_pending') && ($item['active_status'] != 'return_request_approved') && ($item['active_status'] != 'return_request_decline') ) { ?>
+                                                <div class="col my-auto p-0">
+                                                    <a class="update-order-item btn btn-xs btn-danger text-white mt-3 m-0"
+                                                        data-status="returned" data-item-id="<?= $item['id'] ?>"
+                                                        data-izimodal-open=".returnModal" href="#">
+                                                        <?= !empty($this->lang->line('return')) ? str_replace('\\', '', $this->lang->line('return')) : 'Return' ?>
+                                                    </a>
+                                                </div>
+                                            <?php } ?>
 
-
-                                            </div>
+                                                 
                                         <?php } ?>
                                     <?php } ?>
 
@@ -402,6 +409,10 @@
                                 if ($active_status === 'received') {
                                     $input_status = 'cancelled';
                                 } elseif ($active_status === 'delivered') {
+                                    $input_status = 'returned';
+                                } else if ($active_status === 'return_request_pending') {
+                                    $input_status = 'returned';
+                                } else if ($active_status === 'return_request_approved') {
                                     $input_status = 'returned';
                                 }
                                 ?>

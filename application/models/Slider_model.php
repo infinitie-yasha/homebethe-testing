@@ -69,6 +69,7 @@ class Slider_model extends CI_Model
 
         // Count query
         $count_res = $this->db->select('COUNT(DISTINCT sliders.id) as `total`');
+     
 
         // Add joins for name search
         if (!empty($search)) {
@@ -94,6 +95,10 @@ class Slider_model extends CI_Model
 
         $slider_count = $count_res->get('sliders')->result_array();
         $total = $slider_count[0]['total'];
+
+        if($offset > $total) {
+            $offset = 0;    
+        }
 
         // Main query
         $search_res = $this->db->select('sliders.*');

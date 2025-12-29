@@ -123,7 +123,6 @@ class Tickets extends CI_Controller
         $this->form_validation->set_rules('email', 'email', 'trim|required|xss_clean|valid_email');
         $this->form_validation->set_rules('description', 'description', 'trim|required|xss_clean');
 
-
         if (!$this->form_validation->run()) {
             $this->response['error'] = true;
             $this->response['message'] = strip_tags(validation_errors());

@@ -129,9 +129,9 @@ class Login extends CI_Controller
                 ->where('email', $new_email)
                 ->where('id !=', $user_id)
                 ->count_all_results('users');
-            
+
             if ($exists > 0) {
-                
+
                 $response['error'] = true;
                 $response['csrfName'] = $this->security->get_csrf_token_name();
                 $response['csrfHash'] = $this->security->get_csrf_hash();
@@ -139,17 +139,41 @@ class Login extends CI_Controller
                 echo json_encode($response);
                 return false;
                 exit();
-                
+
             }
 
 
             if (!empty($old) || !empty($new) || !empty($new_confirm)) {
+
+                // 1. All fields must be filled
+                if (empty($old) || empty($new) || empty($new_confirm)) {
+                    echo json_encode([
+                        'error' => true,
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                        'message' => 'All password fields are required.'
+                    ]);
+                    return;
+                }
+
+                // 2. New password & confirm password must match
+                if ($new !== $new_confirm) {
+                    echo json_encode([
+                        'error' => true,
+                        'csrfName' => $this->security->get_csrf_token_name(),
+                        'csrfHash' => $this->security->get_csrf_hash(),
+                        'message' => 'New password and confirm password do not match.'
+                    ]);
+                    return;
+                }
+
+
                 if (!$this->ion_auth->change_password($identity, $this->input->post('old'), $this->input->post('new'))) {
                     // if the login was un-successful
                     $response['error'] = true;
                     $response['csrfName'] = $this->security->get_csrf_token_name();
                     $response['csrfHash'] = $this->security->get_csrf_hash();
-                    $response['message'] = $this->ion_auth->errors();
+                    $response['message'] = 'Unable to Change Password, Maybe old password is incorrect.';
                     echo json_encode($response);
                     return;
                     exit();

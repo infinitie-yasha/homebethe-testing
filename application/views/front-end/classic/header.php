@@ -25,6 +25,10 @@ $max_cod_amount = isset($payment_method['max_cod_amount']) ? $payment_method['ma
 
 $doctor_brown = get_settings('doctor_brown', true);
 $doctor_brown = (isset($doctor_brown) && !empty($doctor_brown)) ? $doctor_brown['code_bravo'] : '';
+
+
+
+
 ?>
 <!-- header starts -->
 <div id="mySidenav" class="sidenav is-closed-left">

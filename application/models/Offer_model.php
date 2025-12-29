@@ -96,6 +96,10 @@ class Offer_model extends CI_Model
             $total = $row['total'];
         }
 
+        if ($offset > $total) {
+            $offset = 0;
+        }
+
         $search_res = $this->db->select(' o.*, p.name as product_name, c.name as category_name ');
         if (isset($multipleWhere) && !empty($multipleWhere)) {
             $this->db->group_Start();

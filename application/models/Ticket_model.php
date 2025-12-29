@@ -172,6 +172,10 @@ class Ticket_model extends CI_Model
             $total = $row['total'];
         }
 
+        if($offset >= $total){
+            $offset = 0;
+        }
+
         $search_res = $this->db->select('t.*,tty.title,u.username')->join('ticket_types tty', 'tty.id=t.ticket_type_id', 'left')->join('users u', 'u.id=t.user_id', 'left');
 
         if (isset($multipleWhere) && !empty($multipleWhere)) {
@@ -405,23 +409,26 @@ class Ticket_model extends CI_Model
                        data-status="' . $row['status'] . '"
                        data-ticket_type="' . $row['title'] . '"
                        data-toggle="modal"
-                       data-target="#address-modal-' . $row['id'] . '">
+                    data-target="#address-modal-' . $row['id'] . '">
                         <i class="fa fa-edit me-2"></i>Edit Ticket
                     </a>
                 </li>';
                 $operate .= '<li>
-                    <a class="dropdown-item view_ticket_chat ' . $disabled . '" href="javascript:void(0)"
-                       data-id="' . $row['id'] . '"
-                       data-username="' . $row['username'] . '"
-                       data-date_created="' . $row['date_created'] . '"
-                       data-subject="' . $row['subject'] . '"
-                       data-status="' . $row['status'] . '"
-                       data-ticket_type="' . $row['title'] . '"
-                       data-target="#ticket_modal"
-                       data-toggle="modal">
-                        <i class="fa fa-comments me-2"></i>View Chat
-                    </a>
-                </li>';
+    <a class="dropdown-item view_ticket_chat ' . $disabled . '" href="javascript:void(0)"
+       data-id="' . $row['id'] . '"
+       data-username="' . $row['username'] . '"
+       data-date_created="' . $row['date_created'] . '"
+       data-subject="' . $row['subject'] . '"
+       data-status="' . $row['status'] . '"
+       data-ticket_type="' . $row['title'] . '" ' .
+                    (($row['status'] == "2" || $row['status'] == "5")
+                        ? 'data-target="#ticket_modal" data-toggle="modal"'
+                        : '') . '
+    >
+        <i class="fa fa-comments me-2"></i>View Chat
+    </a>
+</li>';
+
                 $operate .= '
                 </ul>
             </div>';
@@ -807,7 +814,7 @@ class Ticket_model extends CI_Model
         }
     }
 
-    function get_ticket_type_list($ticket_type_filter = NULL)
+    function get_ticket_type_list($ticket_type_filter = NULL, $user_type_filter = NULL)
     {
         $offset = 0;
         $limit = 10;
@@ -841,6 +848,11 @@ class Ticket_model extends CI_Model
         // Add ticket type filter
         if (isset($ticket_type_filter) && !empty($ticket_type_filter)) {
             $where['id'] = $ticket_type_filter;
+        }
+
+        // Add user type filter
+        if (isset($user_type_filter) && !empty($user_type_filter)) {
+            $where['for'] = $user_type_filter;
         }
 
         $count_res = $this->db->select(' COUNT(id) as `total`');

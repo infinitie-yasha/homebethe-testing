@@ -60,6 +60,14 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                                <div class="col-md-4">
+                                    <label class="col-form-label" for="user_type_filter">Filter By User Type</label>
+                                    <select class="form-select" name="user_type_filter" id="user_type_filter">
+                                        <option value="">Select User Type</option>
+                                        <option value="customer">Customer</option>
+                                        <option value="seller">Seller</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -88,7 +96,8 @@
                                     <tr>
                                         <th data-field="id" data-sortable="true" data-align='center'>ID</th>
                                         <th data-field="title" data-sortable="false" data-align='center'>Title</th>
-                                        <th data-field="user_type" data-sortable="false" data-align='center'>User Type</th>
+                                        <th data-field="user_type" data-sortable="false" data-align='center'>User Type
+                                        </th>
                                         <th data-field="date_created" data-sortable="date_created" data-visible="false"
                                             data-align='center'>Date Created</th>
                                         <th data-field="operate" data-sortable="false" data-align='center'>Action</th>

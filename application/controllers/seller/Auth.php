@@ -921,6 +921,7 @@ class Auth extends CI_Controller
             return sendWebJsonResponse(true, "Mobile is required !");
         }
         $user_exits = $this->db->where('mobile', $mobile)->get('users')->row_array();
+            
 
         if ($user_exits) {
             $groups = [

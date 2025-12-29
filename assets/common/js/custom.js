@@ -3359,7 +3359,7 @@ document.addEventListener("DOMContentLoaded", function () {
         '#order_status_filter',
         '#video_type',
         '#product_type_menu',
-        '#product-type',
+        // '#product-type',
         '#download_link_type'
     ];
     tomSelectElements.forEach(selector => {
@@ -4519,4 +4519,47 @@ $(document).on('click', '.consignment_order_status_update', function (e) {
 
         }
     );
+});
+
+function allowOnlyPositiveNumbers(input) {
+    input.addEventListener('input', function () {
+        let value = this.value;
+
+        // Remove everything except digits and minus
+        value = value.replace(/[^0-9-]/g, '');
+
+        // If negative, convert to positive
+        if (value.startsWith('-')) {
+            value = value.replace('-', '');
+        }
+
+        // Remove leading zeros (optional)
+        value = value.replace(/^0+/, '');
+
+        // If value is not a valid positive number, clear it
+        if (!/^\d*$/.test(value)) {
+            value = '';
+        }
+
+        this.value = value;
+    });
+}
+$(document).ready(function () {
+    let commission_perc = document.getElementById('commission_perc');
+    if (commission_perc) {
+        allowOnlyPositiveNumbers(commission_perc);
+    }
+    let datepicker = document.getElementById('datepicker'); 
+    if (datepicker) {
+        $("#datepicker").on('input', function (e) {
+            console.log(e.target.value);
+            let value = e.target.value;
+            if (value == '' || value.length <= 0) {
+                document.getElementById('start_date').value = '';
+                document.getElementById('end_date').value = '';
+                return;
+            }
+                
+        });
+    }
 });

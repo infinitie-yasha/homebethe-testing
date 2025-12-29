@@ -83,7 +83,6 @@
                             <form x-data="ajaxForm({
                                             url: base_url + 'admin/Notification_settings/send_notifications',
                                             offcanvasId: 'sendNotification',
-                                            
                                         })" method="POST" class="form-horizontal" id="send_notification_form">
                                 <div class="offcanvas-body">
                                     <div>
@@ -250,18 +249,7 @@
                                         <button type="button" class="btn" data-bs-dismiss="offcanvas"
                                             aria-label="Close">Close</button>
                                         <button type="submit" class="btn btn-primary" x-bind:disabled="isLoading">
-
-                                            <template x-if="!isLoading">
-                                                <span x-text="loaderText"></span>
-                                            </template>
-
-                                            <template x-if="isLoading">
-                                                <span>
-                                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                                    Processing...
-                                                </span>
-                                            </template>
-
+                                            Send <i class="ms-2 ti ti-arrow-right"></i>
                                         </button>
 
                                     </div>
@@ -279,7 +267,6 @@
                                     <form x-data="ajaxForm({
                                             url: base_url + 'admin/category/add_category',
                                             modalId: 'addCategoryModal',
-                                            loaderText: 'Saving...'
                                         })" method="POST" class="form-horizontal" id="add_category_form">
 
                                         <div class="modal-body p-0">

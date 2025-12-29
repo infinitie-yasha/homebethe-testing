@@ -101,7 +101,7 @@
                                         </label>
                                         <div class="col">
                                             <input type="text" class="form-control" name="email" id="email"
-                                                placeholder="Email" />
+                                                placeholder="Title" />
                                         </div>
                                     </div>
 

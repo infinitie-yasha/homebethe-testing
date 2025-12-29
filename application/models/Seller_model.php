@@ -32,7 +32,7 @@ class Seller_model extends CI_Model
             'status' => (isset($data['status']) && $data['status'] != "") ? $data['status'] : 2,
             'pan_number' => (isset($data['pan_number']) && !empty($data['pan_number'])) ? $data['pan_number'] : '',
             'pan_upload' => (isset($data['pan_upload']) && !empty($data['pan_upload'])) ? $data['pan_upload'] : '',
-            
+
             'tax_number' => (isset($data['tax_number']) && !empty($data['tax_number'])) ? $data['tax_number'] : '',
             'tax_name' => (isset($data['tax_name']) && !empty($data['tax_name'])) ? $data['tax_name'] : '',
             'bank_name' => (isset($data['bank_name']) && !empty($data['bank_name'])) ? $data['bank_name'] : '',
@@ -236,7 +236,7 @@ class Seller_model extends CI_Model
 
             // Edit Seller
             $operate .= '<li>
-                <a class="dropdown-item" href="'.  base_url() .'admin/sellers/manage-seller?edit_id=' . $row['user_id'] . '" 
+                <a class="dropdown-item" href="' . base_url() . 'admin/sellers/manage-seller?edit_id=' . $row['user_id'] . '" 
                    data-id="' . $row['user_id'] . '">
                     <i class="ti ti-pencil me-2"></i>Edit
                 </a>
@@ -326,7 +326,7 @@ class Seller_model extends CI_Model
             }
             $tempRow['rating'] = '<div class="rating">' . $stars . '</div><p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
 
-                // $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
+            // $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
             ;
             $tempRow['tax_number'] = $row['tax_number'];
             $tempRow['pan_number'] = $row['pan_number'];
@@ -751,7 +751,8 @@ class Seller_model extends CI_Model
             $tempRow['latitude'] = $row['latitude'];
             $tempRow['longitude'] = $row['longitude'];
             $tempRow['tax_name'] = $row['tax_name'];
-            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';;
+            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
+            ;
             $tempRow['tax_number'] = $row['tax_number'];
             $tempRow['pan_number'] = $row['pan_number'];
 
@@ -874,7 +875,8 @@ class Seller_model extends CI_Model
             $tempRow['latitude'] = $row['latitude'];
             $tempRow['longitude'] = $row['longitude'];
             $tempRow['tax_name'] = $row['tax_name'];
-            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';;
+            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
+            ;
             $tempRow['tax_number'] = $row['tax_number'];
             $tempRow['pan_number'] = $row['pan_number'];
 
@@ -996,7 +998,8 @@ class Seller_model extends CI_Model
             $tempRow['latitude'] = $row['latitude'];
             $tempRow['longitude'] = $row['longitude'];
             $tempRow['tax_name'] = $row['tax_name'];
-            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';;
+            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
+            ;
             $tempRow['tax_number'] = $row['tax_number'];
             $tempRow['pan_number'] = $row['pan_number'];
 
@@ -1112,7 +1115,8 @@ class Seller_model extends CI_Model
             $tempRow['latitude'] = $row['latitude'];
             $tempRow['longitude'] = $row['longitude'];
             $tempRow['tax_name'] = $row['tax_name'];
-            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';;
+            $tempRow['rating'] = ' <p> (' . intval($row['rating']) . '/' . $row['no_of_ratings'] . ') </p>';
+            ;
             $tempRow['tax_number'] = $row['tax_number'];
             $tempRow['pan_number'] = $row['pan_number'];
 

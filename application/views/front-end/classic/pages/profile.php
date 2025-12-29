@@ -12,6 +12,9 @@
     </div>
 
 </section>
+
+<input type="hidden" name="login_type" id="login_type" value="<?= isset($loging_type) ? $loging_type : '' ?>"/>
+
 <!-- end breadcrumb -->
 <section class="my-account-section">
     <div class="main-content">

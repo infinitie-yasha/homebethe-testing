@@ -501,9 +501,15 @@ class Product extends CI_Controller
     {
         if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller() && ($this->ion_auth->seller_status() == 1 || $this->ion_auth->seller_status() == 0)) {
             $seller_id = (isset($_GET['seller_id']) && !empty($_GET['seller_id'])) ? $this->input->get('seller_id', true) : $this->session->userdata('user_id');
-            $status = (isset($_GET['status']) && $_GET['status'] != "") ? $this->input->get('status', true) : NULL;
+            $status = (isset($_GET['status']) && $_GET['status'] != "") ? $this->input->get('status', true) : '';
+
+            $from_select = (isset($_GET['from_select']) && $_GET['from_select'] != "") ? $this->input->get('from_select', true) : 0;
+
             if (isset($_GET['flag']) && !empty($_GET['flag'])) {
                 return $this->product_model->get_product_details($_GET['flag'], $seller_id, $status);
+            }
+            if (isset($_GET['from_select']) && !empty($_GET['from_select'])) {
+                return $this->product_model->get_product_details(null, $seller_id, $status, null, $from_select);
             }
             return $this->product_model->get_product_details(null, $seller_id, $status);
         } else {

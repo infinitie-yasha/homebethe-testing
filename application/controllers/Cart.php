@@ -166,9 +166,10 @@ class Cart extends CI_Controller
                 'product_variant_id' => $this->input->post('product_variant_id', true),
             ));
         }
-
+  
 
         if (!$this->cart_model->add_to_cart($data, $check_status)) {
+           
             if ($_POST['qty'] == 0) {
                 $res = get_cart_total($this->data['user']->id, false);
             } else {
@@ -521,6 +522,7 @@ class Cart extends CI_Controller
 
     public function place_order()
     {
+      
         
         if ($this->data['is_logged_in']) {
             /*
@@ -618,7 +620,7 @@ class Cart extends CI_Controller
                     $min_cod_amount = isset($payment_method['min_cod_amount']) ? $payment_method['min_cod_amount'] : 0;
                     $max_cod_amount = isset($payment_method['max_cod_amount']) ? $payment_method['max_cod_amount'] : 0;
 
-                    $total = $_POST['total'];
+                    $total = floatval(str_replace(',', '', $_POST['total']));
                     if($total > $max_cod_amount){
                         $this->response['error'] = true;
                         $this->response['csrfName'] = $this->security->get_csrf_token_name();

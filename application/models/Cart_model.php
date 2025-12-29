@@ -28,6 +28,7 @@ class Cart_model extends CI_Model
                 'is_saved_for_later' => (isset($data['is_saved_for_later']) && !empty($data['is_saved_for_later']) && $data['is_saved_for_later'] == '1') ? $data['is_saved_for_later'] : '0',
                 'added_timestamp' => $time,
             ];
+           
             if ($qty[$i] == 0) {
                 $this->remove_from_cart($cart_data);
             } else {

@@ -191,19 +191,36 @@ class Affiliate_model extends CI_Model
 
             // Remove Affiliate User
             $operate .= '<li>
-                <a class="dropdown-item text-danger" href="javascript:void(0)"
-                   x-data="ajaxDelete({
-                       url: base_url + \'admin/affiliate_users/remove_affiliate\',
-                       id: \'' . $row['user_id'] . '\',
-                       status: \'7\',
-                       tableSelector: \'#affiliate_users_table\',
-                       confirmTitle: \'Remove Affiliate user\',
-                       confirmMessage: \'Do you really want to remove this Affiliate User?\'
-                   })"
-                   @click="deleteItem">
-                    <i class="ti ti-trash me-2"></i>Remove Affiliate User
-                </a>
-            </li>';
+    <a class="dropdown-item d-flex align-items-center text-danger"
+       href="javascript:void(0)"
+       x-data="ajaxDelete({
+           url: base_url + \'admin/affiliate_users/remove_affiliate\',
+           id: \'' . $row['user_id'] . '\',
+           status: \'7\',
+           tableSelector: \'#affiliate_users_table\',
+           confirmTitle: \'Remove Affiliate User\',
+           confirmMessage: \'Do you really want to remove this Affiliate User?\'
+       })"
+       @click="deleteItem">
+        <i class="ti ti-trash me-2"></i>
+        Remove Affiliate User
+    </a>
+</li>';
+
+            // $operate .= '<li>
+            //     <a class="dropdown-item text-danger" href="javascript:void(0)"
+            //        x-data="ajaxDelete({
+            //            url: base_url + \'admin/affiliate_users/remove_affiliate\',
+            //            id: \'' . $row['user_id'] . '\',
+            //            status: \'7\',
+            //            tableSelector: \'#affiliate_users_table\',
+            //            confirmTitle: \'Remove Affiliate user\',
+            //            confirmMessage: \'Do you really want to remove this Affiliate User?\'
+            //        })"
+            //        @click="deleteItem">
+            //         <i class="ti ti-trash me-2"></i>Remove Affiliate User
+            //     </a>
+            // </li>';
 
             $operate .= '
                 </ul>
@@ -539,9 +556,9 @@ class Affiliate_model extends CI_Model
             $count_res->where($where);
         }
 
-           if (!empty($_GET['category_id'])) {
-        $category_id = $_GET['category_id'];
-    }
+        if (!empty($_GET['category_id'])) {
+            $category_id = $_GET['category_id'];
+        }
 
         if (isset($p_status) && $p_status != "") {
             $count_res->where("p.status", $p_status);
@@ -774,7 +791,7 @@ class Affiliate_model extends CI_Model
         $query = $this->db->get();
         $data = $query->result_array();
 
-       
+
         // ====== FINAL RETURN ======
         return [
             'total' => (int) $total,

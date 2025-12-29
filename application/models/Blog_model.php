@@ -348,108 +348,145 @@ class Blog_model extends CI_Model
         $limit = 10;
         $sort = 'id';
         $order = 'DESC';
-        $multipleWhere = '';
-        $category_id = (isset($_GET['category_id']) && !empty($_GET['category_id'])) ? $_GET['category_id'] : '';
 
-        isset($category_id) && !empty($category_id) ? $where['category_id'] = $category_id : '';
+        $where = [];
+        $multipleWhere = [];
 
-        if (isset($_GET['offset']) && !empty($_GET['offset']))
-            $offset = $_GET['offset'];
-        if (isset($_GET['limit']) && !empty($_GET['limit']))
-            $limit = $_GET['limit'];
+        // CATEGORY FILTER
+        $category_id = (!empty($_GET['category_id'])) ? $_GET['category_id'] : '';
+        if (!empty($category_id)) {
+            $where['category_id'] = $category_id;
+        }
 
-        if (isset($_GET['sort']) && !empty($_GET['sort']))
-            if ($_GET['sort'] == 'id') {
-                $sort = "id";
-            } else {
-                $sort = $_GET['sort'];
-            }
-        if (isset($_GET['order']) && !empty($_GET['order']))
+
+
+        // PAGINATION
+        if (!empty($_GET['offset'])) {
+            $offset = (int) $_GET['offset'];
+        }
+        if (!empty($_GET['limit'])) {
+            $limit = (int) $_GET['limit'];
+        }
+
+        // SORTING
+        if (!empty($_GET['sort'])) {
+            $sort = $_GET['sort'] === 'id' ? 'id' : $_GET['sort'];
+        }
+        if (!empty($_GET['order'])) {
             $order = $_GET['order'];
+        }
 
-        if (isset($_GET['search']) && $_GET['search'] != '') {
+        // SEARCH
+        if (isset($_GET['search']) && $_GET['search'] !== '') {
             $search = $_GET['search'];
-            $multipleWhere = ['`id`' => $search, '`description`' => $search, '`category_id`' => $search, '`title`' => $search];
+            $multipleWhere = [
+                'id' => $search,
+                'description' => $search,
+                'category_id' => $search,
+                'title' => $search
+            ];
         }
 
-        $count_res = $this->db->select(' COUNT(id) as `total` ');
+        /* ---------------- COUNT QUERY ---------------- */
+        $count_res = $this->db->select('COUNT(id) AS total')
+            ->from('blogs');
 
-        if (isset($multipleWhere) && !empty($multipleWhere)) {
-            $count_res->or_like($multipleWhere);
+        if (!empty($multipleWhere)) {
+            $count_res->group_start()
+                ->or_like($multipleWhere)
+                ->group_end();
         }
 
-        if (isset($where) && !empty($where)) {
+        if (!empty($where)) {
             $count_res->where($where);
         }
 
-        $cat_count = $count_res->get('blogs')->result_array();
-        foreach ($cat_count as $row) {
-            $total = $row['total'];
+        $cat_count = $count_res->get()->result_array();
+        $total = $cat_count[0]['total'] ?? 0;
+
+        // OFFSET SAFETY
+        if ($offset > $total) {
+            $offset = 0;
         }
 
-        $search_res = $this->db->select(' * ');
-        if (isset($multipleWhere) && !empty($multipleWhere)) {
-            $this->db->group_start();
-            $search_res->or_like($multipleWhere);
-            $this->db->group_end();
+        /* ---------------- DATA QUERY ---------------- */
+        $search_res = $this->db->select('*')
+            ->from('blogs');
+
+        if (!empty($multipleWhere)) {
+            $search_res->group_start()
+                ->or_like($multipleWhere)
+                ->group_end();
         }
-        if (isset($where) && !empty($where)) {
+
+        if (!empty($where)) {
             $search_res->where($where);
         }
 
-        $cat_search_res = $search_res->order_by($sort, $order)->limit($limit, $offset, $category_id)->get('blogs')->result_array();
+        $cat_search_res = $search_res
+            ->order_by($sort, $order)
+            ->limit($limit, $offset)
+            ->get()
+            ->result_array();
+
+        /* ---------------- RESPONSE ---------------- */
         $bulkData = array();
         $bulkData['total'] = $total;
         $rows = array();
         $tempRow = array();
 
+
+        // ================== DO NOT TOUCHED ==================
         foreach ($cat_search_res as $row) {
             // print_r($row);
             $category_id = $row['category_id'];
-            $category_name = fetch_details('blog_categories', "", 'name,id', "", "", "", "", "id", $category_id);
-
+            $blog_category = $this->db->select('name,id')
+                ->from('blog_categories')
+                ->where('id', $category_id)
+                ->get()
+                ->row_array();
             // Create dropdown menu for operate column
             if (!$this->ion_auth->is_seller()) {
                 $operate = '
-                <div class="dropdown">
-                    <button class="btn btn-secondary btn-sm bg-secondary-lt" type="button" 
-                            data-bs-toggle="dropdown" aria-expanded="false" title="Actions">
-                        <i class="ti ti-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu">';
+            <div class="dropdown">
+                <button class="btn btn-secondary btn-sm bg-secondary-lt" type="button" 
+                        data-bs-toggle="dropdown" aria-expanded="false" title="Actions">
+                    <i class="ti ti-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu">';
 
                 // Edit Blog
                 $operate .= '<li>
-                    <a class="dropdown-item" href="javascript:void(0)" 
-                       data-id="' . $row['id'] . '" 
-                       data-category-id="' . $category_id . '" 
-                       data-bs-toggle="offcanvas" 
-                       data-bs-target="#addBlog">
-                        <i class="ti ti-pencil me-2"></i>Edit
-                    </a>
-                </li>';
+                <a class="dropdown-item" href="javascript:void(0)" 
+                   data-id="' . $row['id'] . '" 
+                   data-category-id="' . $category_id . '" 
+                   data-bs-toggle="offcanvas" 
+                   data-bs-target="#addBlog">
+                    <i class="ti ti-pencil me-2"></i>Edit
+                </a>
+            </li>';
 
                 // Status actions based on current status
                 if ($row['status'] == '1') {
                     $tempRow['status'] = '<a class="badge badge-success bg-success-lt text-decoration-none">Active</a>';
                     $operate .= '<li>
-                        <a class="dropdown-item update_active_status" href="javascript:void(0)" 
-                           data-table="blogs" 
-                           data-id="' . $row['id'] . '" 
-                           data-status="' . $row['status'] . '">
-                            <i class="ti ti-eye-off me-2"></i>Deactivate
-                        </a>
-                    </li>';
+                    <a class="dropdown-item update_active_status" href="javascript:void(0)" 
+                       data-table="blogs" 
+                       data-id="' . $row['id'] . '" 
+                       data-status="' . $row['status'] . '">
+                        <i class="ti ti-eye-off me-2"></i>Deactivate
+                    </a>
+                </li>';
                 } else {
                     $tempRow['status'] = '<a class="badge badge-danger bg-danger-lt text-decoration-none">Inactive</a>';
                     $operate .= '<li>
-                        <a class="dropdown-item update_active_status" href="javascript:void(0)" 
-                           data-table="blogs" 
-                           data-id="' . $row['id'] . '" 
-                           data-status="' . $row['status'] . '">
-                            <i class="ti ti-eye me-2"></i>Activate
-                        </a>
-                    </li>';
+                    <a class="dropdown-item update_active_status" href="javascript:void(0)" 
+                       data-table="blogs" 
+                       data-id="' . $row['id'] . '" 
+                       data-status="' . $row['status'] . '">
+                        <i class="ti ti-eye me-2"></i>Activate
+                    </a>
+                </li>';
                 }
 
                 // Divider
@@ -457,32 +494,32 @@ class Blog_model extends CI_Model
 
                 // Delete Blog
                 $operate .= '<li>
-                    <a class="dropdown-item text-danger" href="javascript:void(0)"
-                       x-data="ajaxDelete({
-                           url: base_url + \'admin/blogs/delete_blog\',
-                           id: \'' . $row['id'] . '\',
-                           tableSelector: \'#blogs_table\',
-                           confirmTitle: \'Delete Blog\',
-                           confirmMessage: \'Do you really want to delete this blog?\'
-                       })"
-                       @click="deleteItem">
-                        <i class="ti ti-trash me-2"></i>Delete
-                    </a>
-                </li>';
+                <a class="dropdown-item text-danger" href="javascript:void(0)"
+                   x-data="ajaxDelete({
+                       url: base_url + \'admin/blogs/delete_blog\',
+                       id: \'' . $row['id'] . '\',
+                       tableSelector: \'#blogs_table\',
+                       confirmTitle: \'Delete Blog\',
+                       confirmMessage: \'Do you really want to delete this blog?\'
+                   })"
+                   @click="deleteItem">
+                    <i class="ti ti-trash me-2"></i>Delete
+                </a>
+            </li>';
 
                 $operate .= '
-                    </ul>
-                </div>';
+                </ul>
+            </div>';
             } else {
                 $operate = '';
             }
 
             $tempRow['id'] = $row['id'];
-            foreach ($category_name as $categories) {
 
-                $tempRow['blog_category'] = $categories['name'];
-                $tempRow['blog_category_id'] = $categories['id'];
-            }
+            $tempRow['blog_category'] = $blog_category['name'] ?? '';
+            $tempRow['blog_category_id'] = $blog_category['id'] ?? '';
+
+
             $tempRow['title'] = str_replace('\\', '', $row['title']);
             $tempRow['description'] = description_word_limit(output_escaping(str_replace('\r\n', '&#13;&#10;', $row['description'])));
             $tempRow['description_main'] = output_escaping(str_replace('\r\n', '&#13;&#10;', $row['description']));
@@ -495,18 +532,25 @@ class Blog_model extends CI_Model
                 $row['image_main'] = $row['image'];
                 $row['image'] = get_image_url($row['image'], 'thumb', 'sm');
             }
-            $tempRow['image'] = "<div class='image-box-table' >
-            <a href='" . $row['image_main'] . "' data-toggle='lightbox' data-gallery='gallery'> <img class='rounded' src='" . $row['image'] . "' ></a></div>";
 
+            $tempRow['image'] = "<div class='image-box-table'>
+            <a href='" . $row['image_main'] . "' data-toggle='lightbox' data-gallery='gallery'>
+                <img class='rounded' src='" . $row['image'] . "'>
+            </a>
+        </div>";
 
             if (!$this->ion_auth->is_seller()) {
                 $tempRow['operate'] = $operate;
             }
+
             $rows[] = $tempRow;
         }
+        // ================== DO NOT TOUCHED ==================
+
         $bulkData['rows'] = $rows;
-        print_r(json_encode($bulkData));
+        echo json_encode($bulkData);
     }
+
 
 
     function get_blogs($offset, $limit, $sort, $order, $search = NULL, $category_id = NULL, $from_app = 0)

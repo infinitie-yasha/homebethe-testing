@@ -508,6 +508,8 @@ $config['csrf_exclude_uris'] = array(
     'seller/orders/[a-z_-]+',
     'admin/sellers/add_seller',
     'admin/category/get_category_detail',
+
+    'seller/auth/sign_up'
 );
 
 /*

@@ -80,6 +80,7 @@
                                         <option value="Paystack">Paystack</option>
                                         <option value="Flutterwave">Flutterwave</option>
                                         <option value="Paytm">Paytm</option>
+                                        <option value="phonepe">Phone Pe</option>
                                         <option value="Stripe">Stripe</option>
                                         <option value="bank_transfer">Direct Bank Transfer</option>
                                     </select>

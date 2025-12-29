@@ -192,7 +192,18 @@
                         <div class="shipped-details mt-3 col-md-6">
                             <table class="table table-step-shipping">
                                 <tbody>
-                                    <?php if (isset($payment_methods['cod_method']) && $payment_methods['cod_method'] == 1) { ?>
+
+                                    <?php
+                                    $min_cod = (float) ($payment_methods['min_cod_amount'] ?? 0);
+                                    $max_cod = (float) ($payment_methods['max_cod_amount'] ?? 0);
+                                    $cart_total = (float) $cart['sub_total'];
+                                    $is_cod_amount_valid = ($cart_total >= $min_cod && $cart_total <= $max_cod);
+                                    $is_cod_item_allowed = !isset($cart[0]['is_cod_allowed']) || $cart[0]['is_cod_allowed'] == 1;
+                                    $is_cod_allowed = $is_cod_amount_valid && $is_cod_item_allowed;
+                                    ?>
+
+
+                                    <!-- <?php if (isset($payment_methods['cod_method']) && $payment_methods['cod_method'] == 1) { ?>
                                         <tr>
                                             <label for="cod">
                                                 <td>
@@ -214,6 +225,37 @@
                                                         <?= !empty($this->lang->line('cash_on_delivery')) ? str_replace('\\', '', $this->lang->line('cash_on_delivery')) : 'Cash On Delivery' ?>
                                                     </label>
                                                 </td>
+                                        </tr>
+                                    <?php } ?> -->
+                                    <?php if (isset($payment_methods['cod_method']) && $payment_methods['cod_method'] == 1) { ?>
+                                        <tr>
+                                            <label for="cod">
+                                                <td>
+                                                    <label for="cod">
+                                                        <input id="cod" title="<?= $cod_title ?>" name="payment_method"
+                                                            type="radio" value="COD" <?= !$is_cod_allowed ? 'disabled' : '' ?>>
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <label for="cod">
+                                                        <img src="<?= THEME_ASSETS_URL . 'images/cod.png' ?>"
+                                                            class="payment-gateway-images" alt="COD">
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <label for="cod">
+                                                        <?= !empty($this->lang->line('cash_on_delivery'))
+                                                            ? str_replace('\\', '', $this->lang->line('cash_on_delivery'))
+                                                            : 'Cash On Delivery' ?>
+
+                                                    </label>
+                                                    <?php if (!$is_cod_allowed): ?>
+                                                        <small class="text-danger d-block">
+                                                            COD available only between ₹<?= $min_cod ?> – ₹<?= $max_cod ?>
+                                                        </small>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </label>
                                         </tr>
                                     <?php } ?>
                                     <?php if (isset($payment_methods['paypal_payment_method']) && $payment_methods['paypal_payment_method'] == 1) { ?>
@@ -668,7 +710,8 @@
                                                 <tr class="cart-product-tax d-none">
                                                     <td class="text-muted">
                                                         <?= !empty($this->lang->line('tax')) ? str_replace('\\', '', $this->lang->line('tax')) : 'Tax' ?>
-                                                        (<?= $cart['tax_percentage'] ?>%)</td>
+                                                        (<?= $cart['tax_percentage'] ?>%)
+                                                    </td>
                                                     <td class="text-muted">
                                                         <?= $settings['currency'] . ' ' . format_price($cart['tax_amount']) ?>
                                                     </td>
@@ -795,7 +838,8 @@
                                             <tr id="promocode_div" class="d-none">
                                                 <td class="text-muted">
                                                     <?= !empty($this->lang->line('promocode')) ? str_replace('\\', '', $this->lang->line('promocode')) : 'Promo code' ?>
-                                                    <span id="promocode"></span></td>
+                                                    <span id="promocode"></span>
+                                                </td>
                                                 <td class="text-muted"> <i><?= $settings['currency'] ?></i> <span
                                                         id="promocode_amount"></span></td>
                                             </tr>
@@ -885,7 +929,7 @@
         <div class="h4">
             <?= !empty($this->lang->line('promocodes')) ? str_replace('\\', '', $this->lang->line('promocodes')) : 'Promocodes' ?>
         </div>
-        <span id="show_msg_promo" ></span>
+        <span id="show_msg_promo"></span>
         <ul id="promocode-list"></ul>
     </section>
 </div>

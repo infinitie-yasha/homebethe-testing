@@ -1,5 +1,4 @@
 "use strict";
-
 // document.addEventListener('alpine:init', () => {
 //     Alpine.data('ajaxForm', (config = {}) => ({
 //         // Default configuration
@@ -140,14 +139,22 @@ document.addEventListener('alpine:init', () => {
                 });
 
                 let responseData = JSON.parse(response.request.response);
-
+                
+                if (responseData.csrfName && responseData.csrfHash) {
+                    csrfName = responseData.csrfName;
+                    csrfHash = responseData.csrfHash;
+                }
+                
                 if (responseData.error === false) {
                     // Pass switchModal config to the success handler
                     ajaxFormOnSuccess(responseData, this.form, this.modalId, this.switchModal, this.offcanvasId);
+                 
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 } else {
                     ajaxFormOnError(responseData, this.form);
                 }
-
             } catch (err) {
                 // Optional: handle error logging here
                 // const fallbackRes = {

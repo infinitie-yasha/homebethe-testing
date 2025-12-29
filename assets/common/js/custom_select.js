@@ -76,8 +76,11 @@ function initTomSelect({
             }
 
             const queryString = objectToQueryParams(obj);
+            const separator = url.includes('?') ? '&' : '?';
+            axios.get(url + separator + queryString)
+            // axios.get(url + '&' + queryString)
 
-            axios.get(url + '&' + queryString)
+            axios.get(url + separator + queryString)
                 .then(response => {
                     const json = response.data;
                     let addNew = [{ id: '__addnew__', text: '+ Add New' }];

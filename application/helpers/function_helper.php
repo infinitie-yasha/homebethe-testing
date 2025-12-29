@@ -1334,6 +1334,10 @@ function get_token()
     $file_name = get_settings("service_account_file");
 
     $privateKeyFile = FCPATH . $file_name;
+    // Check if file exists and is readable
+    if (empty($file_name) || !file_exists($privateKeyFile) || !is_readable($privateKeyFile)) {
+        return null; // or return false;
+    }
     $scope = 'https://www.googleapis.com/auth/firebase.messaging';
 
     // Read the private key file
@@ -1775,7 +1779,7 @@ function validate_stock($product_variant_ids, $qtns)
                 break;
             }
         }
-
+      
         if (($res[0]['stock_type'] != null && $res[0]['stock_type'] != '')) {
             //Case 1 : Simple Product(simple product)
             if ($res[0]['stock_type'] == 0) {

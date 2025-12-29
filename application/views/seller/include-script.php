@@ -10,9 +10,13 @@
 <script src="<?= base_url('assets/common/js/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/common/js/jquery-ui.min.js') ?>"></script>
 <script src="<?= base_url('assets/common/js/bootstrap-table.min.js') ?>"></script>
-<script src="<?= base_url('assets/common/js/authentication.js') ?>"></script>
 
 <script type="text/javascript" src="<?= base_url('assets/common/js/intlTelInput.js') ?>"></script>
+    
+<script src="<?= base_url('assets/common/js/authentication.js') ?>"></script>
+
+
+<!-- <script type="text/javascript" src="<?= base_url('assets/common/js/intlTelInput.min.js') ?>"></script> -->
 <!-- Markdown -->
 <script type="text/javascript" src="<?= base_url('assets/admin/js/Markdown.Converter.js'); ?>"></script>
 <script type="text/javascript" src="<?= base_url('assets/admin/js/Markdown.Sanitizer.js'); ?>"></script>

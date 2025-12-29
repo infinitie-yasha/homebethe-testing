@@ -147,7 +147,8 @@ class Tickets extends CI_Controller
     {
         if ($this->ion_auth->logged_in() && $this->ion_auth->is_admin()) {
             $ticket_type_filter = $this->input->get('ticket_type_filter', true);
-            return $this->ticket_model->get_ticket_type_list($ticket_type_filter);
+            $user_type_filter = $this->input->get('user_type_filter', true);
+            return $this->ticket_model->get_ticket_type_list($ticket_type_filter, $user_type_filter);
         } else {
             redirect('admin/login', 'refresh');
         }
