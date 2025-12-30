@@ -52,67 +52,82 @@ class Manage_stock extends CI_Controller
             redirect('seller/login', 'refresh');
         }
     }
-public function update_stock()
-{
-    $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|xss_clean');
-    $this->form_validation->set_rules('current_stock', 'Current Stock', 'trim|required|numeric|xss_clean');
-    $this->form_validation->set_rules('quantity', 'Quantity', 'trim|required|numeric|greater_than[0]|xss_clean');
-    $this->form_validation->set_rules('type', 'Type', 'trim|required|in_list[add,subtract]|xss_clean');
-    $this->form_validation->set_rules('variant_id', 'Variant ID', 'trim|required|numeric|xss_clean');
-
-    if (!$this->form_validation->run()) {
-        sendWebJsonResponse(true, strip_tags(validation_errors()));
-    }
-
-    $variant_id = $this->input->post('variant_id', true);
-    $quantity = (int) $this->input->post('quantity', true);
-    $type = $this->input->post('type', true);
-    $current_stock = (int) $this->input->post('current_stock', true);
-    $product_name = $this->input->post('product_name', true); // Store product_name
-
-    // Verify variant exists
-    $this->db->where('id', $variant_id);
-    $product = $this->db->get('product_variants')->row_array();
-    if (!$product) {
-        sendWebJsonResponse(true, 'Invalid product variant.');
-    }
-
-    // Validate stock for subtraction
-    if ($type === 'subtract' && $quantity > $current_stock) {
-        sendWebJsonResponse(true, 'Subtracted stock cannot be greater than current stock.');
-    }
-
-    // Update stock
-    $new_stock = ($type === 'add') ? $current_stock + $quantity : $current_stock - $quantity;
-    $this->db->where('id', $variant_id);
-    $this->db->update('product_variants', ['stock' => $new_stock]);
-    // If affected_rows() == 0 it may be because the new stock equals the previous value.
-    if ($this->db->affected_rows() > 0) {
-        $success = true;
-    } else {
-        // double-check current DB value to determine if update actually resulted in desired state
-        $this->db->where('id', $variant_id);
-        $row = $this->db->get('product_variants')->row_array();
-        if ($row && isset($row['stock']) && (int) $row['stock'] === (int) $new_stock) {
-            $success = true; // nothing changed but desired value already present
-        } else {
-            $success = false;
+    public function update_stock()
+    {
+        $this->form_validation->set_rules('product_name', 'Product Name', 'trim|required|xss_clean');
+        $this->form_validation->set_rules('current_stock', 'Current Stock', 'trim|required|numeric|xss_clean');
+        $this->form_validation->set_rules('quantity', 'Quantity', 'trim|required|numeric|greater_than[0]|xss_clean');
+        $this->form_validation->set_rules('type', 'Type', 'trim|required|in_list[add,subtract]|xss_clean');
+        $this->form_validation->set_rules('variant_id', 'Variant ID', 'trim|required|numeric|xss_clean');
+        if (!$this->form_validation->run()) {
+            sendWebJsonResponse(true, strip_tags(validation_errors()));
         }
+        $variant_id = $this->input->post('variant_id', true);
+        $quantity = (int) $this->input->post('quantity', true);
+        $type = $this->input->post('type', true);
+        $current_stock = (int) $this->input->post('current_stock', true);
+        $product_name = $this->input->post('product_name', true); // Store product_name
+        // Verify variant exists and get product info
+        $this->db->where('id', $variant_id);
+        $product = $this->db->get('product_variants')->row_array();
+        if (!$product) {
+            sendWebJsonResponse(true, 'Invalid product variant.');
+        }
+        $this->db->where('id', $product['product_id']);
+        $product_details = $this->db->get('products')->row_array();
+        if (!$product_details) {
+            sendWebJsonResponse(true, 'Invalid product.');
+        }
+        // Validate stock for subtraction
+        if ($type === 'subtract' && $quantity > $current_stock) {
+            sendWebJsonResponse(true, 'Subtracted stock cannot be greater than current stock.');
+        }
+        // Update stock
+        $new_stock = ($type === 'add') ? $current_stock + $quantity : $current_stock - $quantity;
+        $success = false;
+        // If it's a simple product (stock_type == 0), update products table
+        if ($product_details['stock_type'] == 0) {
+            $this->db->where('id', $product['product_id']);
+            $this->db->update('products', ['stock' => $new_stock]);
+            if ($this->db->affected_rows() > 0) {
+                $success = true;
+            } else {
+                $this->db->where('id', $product['product_id']);
+                $row = $this->db->get('products')->row_array();
+                if ($row && isset($row['stock']) && (int) $row['stock'] === (int) $new_stock) {
+                    $success = true;
+                } else {
+                    $success = false;
+                }
+            }
+        } else {
+            // For variants (stock_type != 0), update product_variants table
+            $this->db->where('id', $variant_id);
+            $this->db->update('product_variants', ['stock' => $new_stock]);
+            if ($this->db->affected_rows() > 0) {
+                $success = true;
+            } else {
+                $this->db->where('id', $variant_id);
+                $row = $this->db->get('product_variants')->row_array();
+                if ($row && isset($row['stock']) && (int) $row['stock'] === (int) $new_stock) {
+                    $success = true;
+                } else {
+                    $success = false;
+                }
+            }
+        }
+        if ($success) {
+            sendWebJsonResponse(false, 'Stock updated successfully.', [
+                'new_stock' => $new_stock,
+                'product_name' => $product_name, // Return original product_name
+                'current_stock' => $current_stock, // Return original current_stock
+                'variant_id' => $variant_id // Return original variant_id
+            ]);
+        } else {
+            sendWebJsonResponse(true, 'Failed to update stock in the database.');
+        }
+        echo json_encode($this->response);
     }
-
-    if ($success) {
-        sendWebJsonResponse(false, 'Stock updated successfully.', [
-            'new_stock' => $new_stock,
-            'product_name' => $product_name, // Return original product_name
-            'current_stock' => $current_stock, // Return original current_stock
-            'variant_id' => $variant_id // Return original variant_id
-        ]);
-    } else {
-        sendWebJsonResponse(true, 'Failed to update stock in the database.');
-    }
-
-    echo json_encode($this->response);
-}
 public function get_variant_data()
     {
         if ($this->ion_auth->logged_in() && $this->ion_auth->is_seller()) {
